@@ -444,7 +444,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"contracts\\Licence.sol": "LicenseToken"
+			"contracts\\LicenceToken.sol": "LicenseToken"
 		},
 		"evmVersion": "berlin",
 		"libraries": {},
@@ -458,7 +458,7 @@
 		"remappings": []
 	},
 	"sources": {
-		"contracts\\Licence.sol": {
+		"contracts\\LicenceToken.sol": {
 			"keccak256": "0xc5e7a4c924b42a18f0af6aad7abf4ae949d336f6d76373e2b62836b81459bfa3",
 			"urls": [
 				"bzz-raw://bb753cf5907441c46ef9900caea3a389f77d75ab1c86f0268f6d7526cbce78b9",

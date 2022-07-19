@@ -5,6 +5,7 @@ import React, { Component } from "react";
 import Web3 from "web3";
 import "./App.css";
 import LicenceContract from "./contracts/LicenseToken.json";
+import getWeb3 from "./getWeb3";
 
 
 
@@ -17,9 +18,7 @@ class App extends Component {
       // Get network provider and web3 instance.
       
       
-      const web3 = new Web3();
-      
-      
+      const web3 = await getWeb3();
 
       // Use web3 to get the user's accounts.
       const accounts = await web3.eth.getAccounts();
@@ -48,13 +47,13 @@ class App extends Component {
     const { accounts, contract } = this.state;
 
     // Stores a given value, 5 by default.
-    await contract.methods.set(5).send({ from: accounts[0] });
+    console.log(await contract.methods.balanceOf(accounts[0]).send({from: accounts[0]}));
 
     // Get the value from the contract to prove it worked.
-    const response = await contract.methods.get().call();
+    //const response = await contract.methods.get().call();
 
     // Update state with the result.
-    this.setState({ storageValue: response });
+    //this.setState({ storageValue: response });
   };
 
   render() {
