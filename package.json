@@ -1,0 +1,7 @@
+{
+  "type": "commonjs",
+  "dependencies": {
+    "solc": "^0.8.15",
+    "truffle": "^5.5.22"
+  }
+}
