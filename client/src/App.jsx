@@ -20,6 +20,15 @@ const App = () => {
 
   const getFiles = useCallback(async () => {
     try {
+      if (!contract) {
+        console.warn(`contract is ${contract}`);
+        return [];
+      }
+
+      if (!accounts) {
+        console.warn(`accounts is ${accounts}`);
+        return [];
+      }
 
       const filesLength = await contract.methods
         .getLength()
@@ -30,6 +39,9 @@ const App = () => {
         let file = await contract.methods.getFile(i).call({from: accounts[0]});
         files.push(file);
       }
+
+      // console.log(`get files for account ${accounts}`)
+      console.log(files);
       setSolidityDrive(files);
     } catch (error) {
       console.log(error);
@@ -38,6 +50,7 @@ const App = () => {
 
 
   const onDrop = useCallback(async (file) => {
+    console.log("onDrop");
     try {
 
       const result = await ipfs.add(file);
@@ -58,11 +71,21 @@ const App = () => {
     } catch (error) {
       console.log(error);
     }
-  }, [getFiles, contract, accounts])
+  }, [getFiles, contract?.methods, accounts]);
+
+  const onAccountChanged = useCallback(async () => {
+    console.log("onAccountChanged");
+    const changedAccounts = await web3?.eth.getAccounts();
+
+    setAccounts(changedAccounts);
+    // console.log(`New accounts ${changedAccounts}`);
+    await getFiles();
+  }, [getFiles, web3?.eth]);
 
 
   useEffect(() => {
     (async () => {
+      // console.log("useEffect");
       try {
 
         // Get network provider and web3 instance.
@@ -85,13 +108,9 @@ const App = () => {
         setAccounts(accounts);
         setContract(instance);
 
-        // this.setState({web3, accounts, contract: instance}, this.getFiles);
-        window.ethereum.on('update', async () => {
-          const changedAccounts = await web3.eth.getAccounts();
-          // this.setState({accounts: changedAccounts});
-          setAccounts(changedAccounts);
-          await getFiles();
-        });
+        // console.log(accounts);
+        // console.log(await getFiles());
+
       } catch (error) {
         // Catch any errors for any of the above operations.
         alert(
@@ -100,6 +119,21 @@ const App = () => {
         console.error(error);
       }
     })();
+  }, []);
+
+  useEffect(() => {
+    if (window.ethereum) {
+      window.ethereum.on('accountsChanged', onAccountChanged);
+    }
+    return () => {
+      console.log("remove previous listener");
+      window.ethereum.removeListener('accountsChanged', onAccountChanged);
+    }
+  }, [onAccountChanged]);
+
+  useEffect(() => {
+    getFiles().then(() => {
+    });
   }, [getFiles]);
 
 
@@ -121,8 +155,8 @@ const App = () => {
 
           </thead>
           <tbody>
-          {solidityDrive !== [] ? solidityDrive.map((item, key) => (
-            <tr>
+          {solidityDrive !== [] ? solidityDrive.map((item, idx) => (
+            <tr key={idx}>
               <th>
                 <FileIcon
                   size={30}
