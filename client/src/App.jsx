@@ -1,77 +1,14 @@
-import React, {useCallback, useEffect, useState} from "react";
-import SolidityDriveContract from "./contracts/SolidityDrive.json";
+import React, { useCallback, useEffect, useState } from "react";
 import getWeb3 from "./utils/getWeb3";
-import {StyledDropZone} from 'react-drop-zone';
-import {Table} from 'reactstrap';
 import "react-drop-zone/dist/styles.css";
 import "bootstrap/dist/css/bootstrap.css";
-import {defaultStyles, FileIcon} from 'react-file-icon';
-import ipfs from "./utils/ipfs";
-import Moment from "react-moment";
 
 import "./App.css";
 
 const App = () => {
-  const [solidityDrive, setSolidityDrive] = useState([]);
   const [web3, setWeb3] = useState(null);
 
   const [accounts, setAccounts] = useState(null);
-  const [contract, setContract] = useState(null);
-
-  const getFiles = useCallback(async () => {
-    try {
-      if (!contract) {
-        console.warn(`contract is ${contract}`);
-        return [];
-      }
-
-      if (!accounts) {
-        console.warn(`accounts is ${accounts}`);
-        return [];
-      }
-
-      const filesLength = await contract.methods
-        .getLength()
-        .call({from: accounts[0]});
-
-      let files = [];
-      for (let i = 0; i < filesLength; i++) {
-        let file = await contract.methods.getFile(i).call({from: accounts[0]});
-        files.push(file);
-      }
-
-      // console.log(`get files for account ${accounts}`)
-      console.log(files);
-      setSolidityDrive(files);
-    } catch (error) {
-      console.log(error);
-    }
-  }, [contract, accounts]);
-
-
-  const onDrop = useCallback(async (file) => {
-    console.log("onDrop");
-    try {
-
-      const result = await ipfs.add(file);
-      console.log(result);
-
-      const timestamp = Math.round(+new Date() / 1000);
-      const type = file.name.substr(file.name.lastIndexOf(".") + 1);
-
-      const uploaded = await contract.methods.add(result.path, file.name, type, timestamp).send({
-        from: accounts[0],
-        gas: 3000000
-      })
-
-      console.log(uploaded);
-      await getFiles();
-
-      // debugger;
-    } catch (error) {
-      console.log(error);
-    }
-  }, [getFiles, contract?.methods, accounts]);
 
   const onAccountChanged = useCallback(async () => {
     console.log("onAccountChanged");
@@ -79,42 +16,30 @@ const App = () => {
 
     setAccounts(changedAccounts);
     // console.log(`New accounts ${changedAccounts}`);
-    await getFiles();
-  }, [getFiles, web3?.eth]);
-
+    // await getFiles();
+  }, [web3?.eth]);
 
   useEffect(() => {
     (async () => {
       // console.log("useEffect");
       try {
-
         // Get network provider and web3 instance.
         const web3 = await getWeb3();
 
         // Use web3 to get the user's accounts.
         const accounts = await web3.eth.getAccounts();
 
-        // Get the contract instance.
-        const networkId = await web3.eth.net.getId();
-        const deployedNetwork = SolidityDriveContract.networks[networkId];
-        const instance = new web3.eth.Contract(
-          SolidityDriveContract.abi,
-          deployedNetwork && deployedNetwork.address,
-        );
-
         // Set web3, accounts, and contract to the state, and then proceed with an
         // example of interacting with the contract's methods.
         setWeb3(web3);
         setAccounts(accounts);
-        setContract(instance);
 
         // console.log(accounts);
         // console.log(await getFiles());
-
       } catch (error) {
         // Catch any errors for any of the above operations.
         alert(
-          `Failed to load web3, accounts, or contract. Check console for details.`,
+          `Failed to load web3, accounts, or contract. Check console for details.`
         );
         console.error(error);
       }
@@ -123,60 +48,19 @@ const App = () => {
 
   useEffect(() => {
     if (window.ethereum) {
-      window.ethereum.on('accountsChanged', onAccountChanged);
+      window.ethereum.on("accountsChanged", onAccountChanged);
     }
     return () => {
       console.log("remove previous listener");
-      window.ethereum.removeListener('accountsChanged', onAccountChanged);
-    }
+      window.ethereum.removeListener("accountsChanged", onAccountChanged);
+    };
   }, [onAccountChanged]);
-
-  useEffect(() => {
-    getFiles().then(() => {
-    });
-  }, [getFiles]);
-
 
   if (!web3) {
     return <div>Loading Web3, accounts, and contract...</div>;
   }
 
-  return (
-    <div className="App">
-      <div className="container pt-3">
-        <StyledDropZone onDrop={onDrop}/>
-        <Table>
-          <thead>
-          <tr>
-            <th width="7%" scope="row"> Type</th>
-            <th className="text-left">File Name</th>
-            <th className="text-right">Date</th>
-          </tr>
-
-          </thead>
-          <tbody>
-          {solidityDrive !== [] ? solidityDrive.map((item, idx) => (
-            <tr key={idx}>
-              <th>
-                <FileIcon
-                  size={30}
-                  extension={item[2]}
-                  {...defaultStyles[item[2]]}
-                />
-              </th>
-              <th className="text-left"><a href={"http://localhost:8080/ipfs/" + item[0]}>{item[1]}</a></th>
-              <th className="text-right">
-                <Moment format="YYYY/MM/DD" unix>{item[3]}</Moment>
-              </th>
-            </tr>
-          )) : null}
-          </tbody>
-        </Table>
-
-      </div>
-    </div>
-
-  );
-}
+  return <div className="App">{accounts && accounts[0]}</div>;
+};
 
 export default App;
