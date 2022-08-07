@@ -19,20 +19,33 @@ contract Application {
 
     function add(string memory _content_hash, string memory _name) public
     {
-        string memory id = toString(applications.length + 1);
-        string memory idLicense = toString(licenses.length + 1);
+        string memory id = toString(uint(keccak256(abi.encodePacked(block.timestamp,
+                                          msg.sender,
+                                          _name,
+                                          applications.length))));
+        string memory idLicense = toString(uint(keccak256(abi.encodePacked(block.timestamp,
+                                          msg.sender,
+                                          licenses.length))));
         applications.push(ApplicationInfo({owner:msg.sender, content_hash: _content_hash, date: block.timestamp, name: _name, id: id}));
         License license = new License();
         license.add(id, msg.sender, 0, idLicense);
         licenses.push(license);
     }
 
-    function buy(string memory applicationId) public
+    function buy(string memory applicationId) public returns(bool)
     {
+        //check application exist
+        (, bool exist) = getIndexApplicationById(applicationId);
+        if (exist == false)
+        {
+            return false;
+        }
+
         License license = new License();
         string memory idLicense2 = toString(licenses.length + 1);
         license.add(applicationId, msg.sender, LICENSE_LIFE_TIME, idLicense2);
         licenses.push(license);
+        return true;
     }
 
     function getContentHash(string memory applicationId) public view returns(string memory content_hash)
