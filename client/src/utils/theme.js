@@ -1,7 +1,7 @@
-import {deepmerge} from "@mui/utils";
-import {experimental_extendTheme as extendMuiTheme,} from "@mui/material/styles";
-import {extendTheme as extendJoyTheme} from "@mui/joy/styles";
-import {blue, grey} from "@mui/material/colors";
+import { deepmerge } from "@mui/utils";
+import { experimental_extendTheme as extendMuiTheme } from "@mui/material/styles";
+import { extendTheme as extendJoyTheme } from "@mui/joy/styles";
+import { blue, grey } from "@mui/material/colors";
 
 // Note: you can't put `joyTheme` inside Material UI's `extendMuiTheme(joyTheme)` because
 //       some of the values in the Joy UI theme refers to CSS variables abd not raw colors.
