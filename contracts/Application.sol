@@ -169,16 +169,16 @@ contract Application {
         return false;
     }
 
-    // permission use one application (close because check license add in app)
-    // function permissionUseApplication(string memory applicationId)  public view returns (bool)
-    // {
-    //     for (uint i = 0; i < licenses.length ; i++) {
-    //         if (licenses[i].owner() == msg.sender && StringUtils.equal(licenses[i].applicationId(), applicationId) && licenses[i].isExpired() == false) {
-    //             return true;
-    //         }
-    //     }
-    //     return false;
-    // }
+    // permission use one application
+    function permissionUseApplication(string memory applicationId)  public view returns (bool)
+    {
+        for (uint i = 0; i < licenses.length ; i++) {
+            if (licenses[i].owner() == msg.sender && StringUtils.equal(licenses[i].applicationId(), applicationId) && licenses[i].isExpired() == false) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     // get index one application by id
     function getIndexApplicationById(string memory applicationId)  public view returns (uint, bool)
