@@ -17,21 +17,26 @@ contract Application {
     ApplicationInfo[] public applications;
     License[] public licenses;
 
+    // add new application
     function add(string memory _content_hash, string memory _name) public
     {
-        string memory id = toString(uint(keccak256(abi.encodePacked(block.timestamp,
+        // generate id
+        string memory id = StringUtils.toString(uint(keccak256(abi.encodePacked(block.timestamp,
                                           msg.sender,
                                           _name,
                                           applications.length))));
-        string memory idLicense = toString(uint(keccak256(abi.encodePacked(block.timestamp,
+        string memory idLicense = StringUtils.toString(uint(keccak256(abi.encodePacked(block.timestamp,
                                           msg.sender,
                                           licenses.length))));
+
+        // add application and license
         applications.push(ApplicationInfo({owner:msg.sender, content_hash: _content_hash, date: block.timestamp, name: _name, id: id}));
         License license = new License();
         license.add(id, msg.sender, 0, idLicense);
         licenses.push(license);
     }
 
+    // buy application
     function buy(string memory applicationId) public returns(bool)
     {
         //check application exist
@@ -41,15 +46,26 @@ contract Application {
             return false;
         }
 
+        // add license
         License license = new License();
-        string memory idLicense2 = toString(licenses.length + 1);
+        string memory idLicense2 = StringUtils.toString(uint(keccak256(abi.encodePacked(block.timestamp,
+                                          msg.sender,
+                                          licenses.length + 1))));
         license.add(applicationId, msg.sender, LICENSE_LIFE_TIME, idLicense2);
         licenses.push(license);
         return true;
     }
 
+    // get content hash of file
     function getContentHash(string memory applicationId) public view returns(string memory content_hash)
     {
+        // if dont have permission
+        if (permissionUseApplication(applicationId) == false)
+        {
+            return "";
+        }
+
+        // find application and get content hash
        for (uint index = 0; index < applications.length; index++) {
             if (StringUtils.equal(applications[index].id,applicationId))
             {
@@ -57,8 +73,10 @@ contract Application {
                     return applications[index].content_hash;
             }
        }
+       return "";
     }
 
+    // get all application
     function getAll() public view returns (ApplicationInfo[] memory)
     {
         uint counter = 0;
@@ -75,6 +93,7 @@ contract Application {
         return ret;
     }
 
+    // get all my application 
     function getAllbyOwnerAddress()  public view returns (ApplicationInfo[] memory)
     {
         uint counter = 0;
@@ -95,6 +114,7 @@ contract Application {
         return ret;
     }
 
+    // get all application can use
     function getAllbyOwnerLicense()  public view returns (ApplicationInfo[] memory)
     {
         uint counter = 0;
@@ -126,6 +146,7 @@ contract Application {
         return ret;
     }
 
+    // transfer permission to onother address
     function transferLicense(string memory licenseId, address newAddress)  public returns (bool)
     {
         // check permission
@@ -143,6 +164,7 @@ contract Application {
         return true;
     }
 
+    // permision use one license
     function permissionLicense(string memory licenseId)  public view returns (bool)
     {
         (uint index, bool exist) = getIndexLicenseById(licenseId);
@@ -157,6 +179,7 @@ contract Application {
         return false;
     }
 
+    // permission use one application
     function permissionUseApplication(string memory applicationId)  public view returns (bool)
     {
         for (uint i = 0; i < licenses.length ; i++) {
@@ -167,6 +190,7 @@ contract Application {
         return false;
     }
 
+    // get index one application by id
     function getIndexApplicationById(string memory applicationId)  public view returns (uint, bool)
     {
         for (uint i = 0; i < applications.length ; i++) {
@@ -177,6 +201,7 @@ contract Application {
         return (0, false);
     }
 
+    // get index one license by id
     function getIndexLicenseById(string memory licenseId)  public view returns (uint, bool)
     {
         for (uint i = 0; i < licenses.length ; i++) {
@@ -185,24 +210,5 @@ contract Application {
             }
         }
         return (0, false);
-    }
-
-    function toString(uint256 value) internal pure returns (string memory) {
-        if (value == 0) {
-            return "0";
-        }
-        uint256 temp = value;
-        uint256 digits;
-        while (temp != 0) {
-            digits++;
-            temp /= 10;
-        }
-        bytes memory buffer = new bytes(digits);
-        while (value != 0) {
-            digits -= 1;
-            buffer[digits] = bytes1(uint8(48 + uint256(value % 10)));
-            value /= 10;
-        }
-        return string(buffer);
     }
 }
