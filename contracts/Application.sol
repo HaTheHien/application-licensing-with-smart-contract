@@ -12,13 +12,15 @@ contract Application {
         string name;
         uint date;
         string id;
+        uint version;
+        uint price; // wei
     }
     
     ApplicationInfo[] public applications;
     License[] public licenses;
 
     // add new application
-    function add(string memory _content_hash, string memory _name) public
+    function add(string memory _content_hash, string memory _name, uint _price) public
     {
         // generate id
         string memory id = StringUtils.toString(uint(keccak256(abi.encodePacked(block.timestamp,
@@ -30,7 +32,7 @@ contract Application {
                                           licenses.length))));
 
         // add application and license
-        applications.push(ApplicationInfo({owner:msg.sender, content_hash: _content_hash, date: block.timestamp, name: _name, id: id}));
+        applications.push(ApplicationInfo({owner:msg.sender, content_hash: _content_hash, date: block.timestamp, name: _name, id: id, version:0, price: _price}));
         License license = new License();
         license.add(id, msg.sender, 0, idLicense);
         licenses.push(license);
@@ -44,19 +46,26 @@ contract Application {
         {
             return false;
         }
+        // update content hash, add version to 1
         applications[index].content_hash = _new_content_hash;
+        applications[index].version++;
         return true;
     }
 
     // buy application
-    function buy(string memory applicationId) public returns(bool)
+    function buy(string memory applicationId) public payable returns(bool)
     {
         //check application exist
-        (, bool exist) = getIndexApplicationById(applicationId);
+        (uint index, bool exist) = getIndexApplicationById(applicationId);
         if (exist == false)
         {
             return false;
         }
+
+        require(
+            msg.value >= applications[index].price,
+            "Not enough wei to buy this license"
+        );
 
         // add license
         License license = new License();
