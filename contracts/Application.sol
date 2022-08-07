@@ -36,6 +36,18 @@ contract Application {
         licenses.push(license);
     }
 
+    // change hash content
+    function changeHashContent(string memory _new_content_hash, string memory _applicationId) public returns(bool)
+    {
+        (uint index, bool exist) = getIndexApplicationById(_applicationId);
+        if (exist == false)
+        {
+            return false;
+        }
+        applications[index].content_hash = _new_content_hash;
+        return true;
+    }
+
     // buy application
     function buy(string memory applicationId) public returns(bool)
     {
