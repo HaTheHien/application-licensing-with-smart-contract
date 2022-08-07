@@ -59,18 +59,11 @@ contract Application {
     // get content hash of file
     function getContentHash(string memory applicationId) public view returns(string memory content_hash)
     {
-        // if dont have permission
-        if (permissionUseApplication(applicationId) == false)
-        {
-            return "";
-        }
-
         // find application and get content hash
        for (uint index = 0; index < applications.length; index++) {
             if (StringUtils.equal(applications[index].id,applicationId))
             {
-                if (permissionUseApplication(applications[index].id))
-                    return applications[index].content_hash;
+                return applications[index].content_hash;
             }
        }
        return "";
@@ -87,7 +80,6 @@ contract Application {
         uint j = 0;
         for (uint i = 0; i < applications.length ; i++) {
             ret[j] = applications[i];
-            ret[j].content_hash = "";
             j++;
         }
         return ret;
@@ -107,7 +99,6 @@ contract Application {
         for (uint i = 0; i < applications.length ; i++) {
             if (applications[i].owner == msg.sender) {
                 ret[j] = applications[i];
-                ret[j].content_hash = "";
                 j++;
             }
         }
@@ -140,13 +131,12 @@ contract Application {
         uint k = 0;
         for (uint i = 0; i < allInt.length ; i++) { 
             ret[k] = applications[i];
-            ret[k].content_hash = "";
             k++;
         }
         return ret;
     }
 
-    // transfer permission to onother address
+    // transfer permission to another address
     function transferLicense(string memory licenseId, address newAddress)  public returns (bool)
     {
         // check permission
@@ -179,16 +169,16 @@ contract Application {
         return false;
     }
 
-    // permission use one application
-    function permissionUseApplication(string memory applicationId)  public view returns (bool)
-    {
-        for (uint i = 0; i < licenses.length ; i++) {
-            if (licenses[i].owner() == msg.sender && StringUtils.equal(licenses[i].applicationId(), applicationId) && licenses[i].isExpired() == false) {
-                return true;
-            }
-        }
-        return false;
-    }
+    // permission use one application (close because check license add in app)
+    // function permissionUseApplication(string memory applicationId)  public view returns (bool)
+    // {
+    //     for (uint i = 0; i < licenses.length ; i++) {
+    //         if (licenses[i].owner() == msg.sender && StringUtils.equal(licenses[i].applicationId(), applicationId) && licenses[i].isExpired() == false) {
+    //             return true;
+    //         }
+    //     }
+    //     return false;
+    // }
 
     // get index one application by id
     function getIndexApplicationById(string memory applicationId)  public view returns (uint, bool)
