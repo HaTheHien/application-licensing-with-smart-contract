@@ -3,27 +3,32 @@
 pragma solidity ^0.8.6;
 
 contract License {
-    string public idApplication;
+    string public applicationId;
     uint public expired;
-    uint public valid;
     address public owner;
+    string public id;
 
-    function add(string memory _idApplication, uint _valid, address _owner, uint _expired) public
+    function add(string memory _applicationId, address _owner, uint _expired, string memory _id) public
     {
-        idApplication = _idApplication;
+        applicationId = _applicationId;
         expired = _expired == 0 ? 0 : block.timestamp + _expired;
-        valid = _valid;
         owner = _owner;
+        id = _id;
     }
 
-    function isExpired() public returns(bool) {
+    function setNewOwner(address newOwner) public
+    {
+        owner = newOwner;
+    }
+
+    function isExpired() public view returns(bool) {
         if (expired == 0)
             return false;
         if (expired < block.timestamp)
         {
-            valid = 0;
+            return true;
         } 
-        return true;
+        return false;
     }
 }
 
