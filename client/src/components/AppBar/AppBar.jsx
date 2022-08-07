@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import StoreIcon from "@mui/icons-material/Store";
 import {
+  alpha,
   AppBar,
   Avatar,
   Box,
@@ -15,7 +16,7 @@ import {
 } from "@mui/material";
 import JoyButton from "@mui/joy/Button";
 
-const pages = ["License"];
+const pages = ["🏪 Buy licenses", "📜 My licences", "📦 My published apps"];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 const DefaultAppBar = () => {
@@ -32,9 +33,9 @@ const DefaultAppBar = () => {
 
   return (
     <AppBar
-      position="static"
+      position="fixed"
       sx={{
-        bgcolor: "background.paper",
+        bgcolor: (theme) => alpha(theme.palette.background.paper, 0.95),
         color: "text.primary",
         borderBottom: "2px solid",
         borderBottomColor: "divider",
@@ -64,12 +65,13 @@ const DefaultAppBar = () => {
 
           <Divider orientation="vertical" flexItem m={2} />
 
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
+          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" }, pl: 1 }}>
             {pages.map((page) => (
               <JoyButton
-                variant="plain"
+                variant="soft"
+                color="neutral"
                 key={page}
-                sx={{ my: 2, color: "inherit", display: "block" }}
+                sx={{ mx: 0.5, my: 2, color: "inherit", display: "block" }}
               >
                 {page}
               </JoyButton>

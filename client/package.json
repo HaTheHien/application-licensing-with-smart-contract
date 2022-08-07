@@ -8,6 +8,7 @@
     "@mui/icons-material": "^5.8.4",
     "@mui/joy": "^5.0.0-alpha.39",
     "@mui/material": "^5.8.6",
+    "dayjs": "^1.11.4",
     "ethers": "^5.6.9",
     "ipfs-http-client": "^57.0.3",
     "prop-types": "^15.8.1",
