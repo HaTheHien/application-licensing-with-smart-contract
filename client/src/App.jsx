@@ -1,9 +1,8 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import getWeb3 from "./utils/getWeb3";
-import "react-drop-zone/dist/styles.css";
-import "bootstrap/dist/css/bootstrap.css";
-
-import "./App.css";
+import { GlobalRouter } from "routes";
+import { theme } from "utils/theme";
+import { Experimental_CssVarsProvider as CssVarsProvider } from "@mui/material/styles";
 
 const App = () => {
   const [web3, setWeb3] = useState(null);
@@ -60,7 +59,13 @@ const App = () => {
     return <div>Loading Web3, accounts, and contract...</div>;
   }
 
-  return <div className="App">{accounts && accounts[0]}</div>;
+  return (
+    <div className="App">
+      <CssVarsProvider theme={theme}>
+        <GlobalRouter />
+      </CssVarsProvider>
+    </div>
+  );
 };
 
 export default App;
