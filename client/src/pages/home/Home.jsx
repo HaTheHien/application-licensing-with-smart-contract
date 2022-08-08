@@ -1,5 +1,5 @@
 import { Container, Grid } from "@mui/material";
-import LicenseItem from "features/store/components/LicenseItem/LicenseItem";
+import LicenseItem from "components/license/LicenseItem/LicenseItem";
 
 const license = {
   id: "75705185633419d2d713ce4f166813eab9b254257c0b258acdca36131a6fc30d",

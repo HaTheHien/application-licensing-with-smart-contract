@@ -1,6 +1,7 @@
-import { BrowserRouter, useLocation, Routes, Route } from "react-router-dom";
+import MainLayout from "components/common/Layout/MainLayout";
+import Home from "pages/home/Home";
 import { useEffect } from "react";
-import { Home, MainLayout } from "features/home";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { ROUTER } from "routes/router";
 
 const ScrollToTop = () => {

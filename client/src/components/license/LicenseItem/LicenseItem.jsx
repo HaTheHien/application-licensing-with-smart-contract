@@ -1,4 +1,4 @@
-import { licenseType } from "features/store/types";
+import { licenseType } from "types";
 import Card from "@mui/joy/Card";
 import { Divider, Stack } from "@mui/material";
 import { Button, Sheet, Typography } from "@mui/joy";

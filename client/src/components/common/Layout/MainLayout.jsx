@@ -1,4 +1,4 @@
-import DefaultAppBar from "components/AppBar/AppBar";
+import DefaultAppBar from "components/common/AppBar/AppBar";
 import { Container, Toolbar } from "@mui/material";
 import PropTypes from "prop-types";
 import { Outlet } from "react-router-dom";
