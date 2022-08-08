@@ -1,22 +1,22 @@
+import { ethers } from "ethers";
 import PropTypes from "prop-types";
 import {
   createContext,
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useReducer,
-  useState,
 } from "react";
 import { etherReducer, initialEtherState } from "stores";
-import { ethers } from "ethers";
 
 const EtherContext = createContext({
   state: initialEtherState,
-  dispatch() {},
+  dispatch: () => {},
 });
 
 export const useEtherContext = () => {
-  return useState(EtherContext);
+  return useContext(EtherContext);
 };
 
 export const EtherContextProvider = ({ children }) => {

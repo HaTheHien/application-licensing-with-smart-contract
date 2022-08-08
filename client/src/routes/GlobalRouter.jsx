@@ -1,4 +1,7 @@
+import InstallMetamaskBanner from "components/blockchain/Info/InstallMetamaskBanner";
+import ConnectToMetamaskIndicator from "components/blockchain/ProgressIndicatior/ConnectToMetamaskIndicator";
 import MainLayout from "components/common/Layout/MainLayout";
+import { useEtherContext } from "context";
 import Home from "pages/home/Home";
 import { useEffect } from "react";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
@@ -14,6 +17,18 @@ const ScrollToTop = () => {
 };
 
 const GlobalRouter = () => {
+  const {
+    state: { metaMaskEnabled },
+  } = useEtherContext();
+
+  if (!window.ethereum) {
+    return <InstallMetamaskBanner />;
+  }
+
+  if (!metaMaskEnabled) {
+    return <ConnectToMetamaskIndicator />;
+  }
+
   return (
     <BrowserRouter>
       <ScrollToTop />

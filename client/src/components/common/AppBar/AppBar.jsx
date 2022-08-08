@@ -1,4 +1,3 @@
-import { useCallback, useState } from "react";
 import StoreIcon from "@mui/icons-material/Store";
 import {
   alpha,
@@ -14,9 +13,8 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import JoyButton from "@mui/joy/Button";
+import { useCallback, useState } from "react";
 
-const pages = ["🏪 Buy licenses", "📜 My licences", "📦 My published apps"];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 const DefaultAppBar = () => {
@@ -65,18 +63,9 @@ const DefaultAppBar = () => {
 
           <Divider orientation="vertical" flexItem m={2} />
 
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" }, pl: 1 }}>
-            {pages.map((page) => (
-              <JoyButton
-                variant="soft"
-                color="neutral"
-                key={page}
-                sx={{ mx: 0.5, my: 2, color: "inherit", display: "block" }}
-              >
-                {page}
-              </JoyButton>
-            ))}
-          </Box>
+          <Box
+            sx={{ flexGrow: 1, display: { xs: "none", md: "flex" }, pl: 1 }}
+          />
 
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
