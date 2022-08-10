@@ -1,0 +1,13 @@
+{
+  "name": "license-contract",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/HaTheHien/application-licensing-with-smart-contract",
+  "author": "Ha The Hien",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "@openzeppelin/contracts": "^4.7.2",
+    "solium": "^1.2.5"
+  }
+}
