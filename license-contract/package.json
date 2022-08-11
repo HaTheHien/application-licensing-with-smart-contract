@@ -8,6 +8,8 @@
   "private": true,
   "devDependencies": {
     "@openzeppelin/contracts": "^4.7.2",
-    "solium": "^1.2.5"
+    "ethlint": "^1.2.5",
+    "prettier": "^2.7.1",
+    "prettier-plugin-solidity": "^1.0.0-beta.24"
   }
 }

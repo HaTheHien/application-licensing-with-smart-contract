@@ -1,1 +1,1 @@
-export * from "types/license-type";
+export * from "types/app-type";

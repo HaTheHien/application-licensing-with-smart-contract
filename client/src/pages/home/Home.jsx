@@ -1,9 +1,10 @@
 import { Tab, TabList, TabPanel, Tabs, Typography } from "@mui/joy";
 import { Container, Grid } from "@mui/material";
-import LicenseItem from "components/license/LicenseItem/LicenseItem";
+import AppItem from "components/app/AppItem/AppItem";
+import AppItemDialog from "components/app/Dialog/AppItemDialog";
 import { useCallback, useState } from "react";
 
-const license = {
+const app = {
   id: "75705185633419d2d713ce4f166813eab9b254257c0b258acdca36131a6fc30d",
   name: "Gallery one",
   date: 1659859521000,
@@ -16,59 +17,73 @@ const license = {
 
 const Home = () => {
   const [index, setIndex] = useState(0);
-
+  const [dialogOpen, setDialogOpen] = useState(false);
   const changeTab = useCallback((e, value) => setIndex(value), []);
+  const [selectedApp, setSelectedApp] = useState(null);
 
   return (
-    <Container sx={{ minHeight: 1000 }}>
-      <Tabs size="lg" value={index} onChange={changeTab}>
-        <TabList variant="outlined">
-          <Tab
-            variant={index === 0 ? "soft" : "plain"}
-            color={index === 0 ? "primary" : "neutral"}
-            sx={{ boxShadow: "none" }}
-          >
-            🏪 Buy licenses
-          </Tab>
+    <>
+      <Container sx={{ minHeight: 1000 }}>
+        <Tabs size="lg" value={index} onChange={changeTab}>
+          <TabList variant="outlined">
+            <Tab
+              variant={index === 0 ? "soft" : "plain"}
+              color={index === 0 ? "primary" : "neutral"}
+              sx={{ boxShadow: "none" }}
+            >
+              🏪 Buy licenses
+            </Tab>
 
-          <Tab
-            variant={index === 1 ? "soft" : "plain"}
-            color={index === 1 ? "info" : "neutral"}
-            sx={{ boxShadow: "none" }}
-          >
-            📜 My licences
-          </Tab>
+            <Tab
+              variant={index === 1 ? "soft" : "plain"}
+              color={index === 1 ? "info" : "neutral"}
+              sx={{ boxShadow: "none" }}
+            >
+              📜 My licences
+            </Tab>
 
-          <Tab
-            variant={index === 2 ? "soft" : "plain"}
-            color={index === 2 ? "warning" : "neutral"}
-            sx={{ boxShadow: "none" }}
-          >
-            📦 My published apps
-          </Tab>
-        </TabList>
+            <Tab
+              variant={index === 2 ? "soft" : "plain"}
+              color={index === 2 ? "warning" : "neutral"}
+              sx={{ boxShadow: "none" }}
+            >
+              📦 My published apps
+            </Tab>
+          </TabList>
 
-        <TabPanel value={0}>
-          <Grid container rowGap={1} columnGap={1} py={2}>
-            <Grid item xs={4}>
-              <LicenseItem license={license} />
+          <TabPanel value={0}>
+            <Grid container rowGap={1} columnGap={1} py={2}>
+              <Grid item xs={4}>
+                <AppItem
+                  app={app}
+                  onClick={useCallback(() => {
+                    setSelectedApp(app);
+                    setDialogOpen(true);
+                  }, [])}
+                />
+              </Grid>
             </Grid>
-          </Grid>
-        </TabPanel>
+          </TabPanel>
 
-        <TabPanel value={1}>
-          <Typography level="h6" textAlign="center">
-            🚧 Under construction
-          </Typography>
-        </TabPanel>
+          <TabPanel value={1}>
+            <Typography level="h6" textAlign="center">
+              🚧 Under construction
+            </Typography>
+          </TabPanel>
 
-        <TabPanel value={2}>
-          <Typography level="h6" textAlign="center">
-            🚧 Under construction
-          </Typography>
-        </TabPanel>
-      </Tabs>
-    </Container>
+          <TabPanel value={2}>
+            <Typography level="h6" textAlign="center">
+              🚧 Under construction
+            </Typography>
+          </TabPanel>
+        </Tabs>
+      </Container>
+      <AppItemDialog
+        openChanged={setDialogOpen}
+        open={dialogOpen}
+        app={selectedApp}
+      />
+    </>
   );
 };
 

@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 
-export const licenseType = PropTypes.shape({
+export const appType = PropTypes.shape({
   id: PropTypes.string,
   name: PropTypes.string,
   date: PropTypes.number,

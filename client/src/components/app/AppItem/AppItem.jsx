@@ -1,4 +1,5 @@
-import { licenseType } from "types";
+import PropTypes from "prop-types";
+import { appType } from "types";
 import Card from "@mui/joy/Card";
 import { Divider, Stack } from "@mui/material";
 import { Button, Sheet, Typography } from "@mui/joy";
@@ -11,24 +12,30 @@ import IconButton from "@mui/joy/IconButton";
 
 dayjs.extend(relativeTime);
 
-const LicenseItem = ({ license }) => {
+const AppItem = ({ app, onClick }) => {
   return (
     <Card
+      onClick={onClick}
       variant="outlined"
       sx={{
+        borderColor: "transparent",
+        borderWidth: "2px",
         transition: "transform 0.3s, border 0.3s",
         "&:hover": {
           transform: "translateY(-2px)",
           boxShadow: "md",
           borderColor: "primary.outlinedHoverBorder",
+          borderWidth: "2px",
+          cursor: "pointer",
         },
         overflow: "hidden",
+        boxShadow: "xs",
       }}
     >
       <Stack direction="row" spacing={1} my={1}>
         <Stack direction="column" spacing={0.5} alignItems="baseline" width={1}>
           <Typography level="h2" fontSize="x-large" fontWeight="bold">
-            📦 {license.name}
+            📦 {app.name}
           </Typography>
 
           <Divider flexItem />
@@ -38,10 +45,7 @@ const LicenseItem = ({ license }) => {
       <Stack direction="row">
         <Typography fontSize="lg" fontWeight="lg">
           🪙{" "}
-          {ethers.utils
-            .formatEther(BigInt(license.price))
-            .slice(0, 8)
-            .toString()}{" "}
+          {ethers.utils.formatEther(BigInt(app.price)).slice(0, 8).toString()}{" "}
           ETH
         </Typography>
       </Stack>
@@ -63,7 +67,7 @@ const LicenseItem = ({ license }) => {
             overflow="hidden"
             textOverflow="ellipsis"
           >
-            {license.id}
+            {app.id}
           </Typography>
         </Sheet>
       </Stack>
@@ -85,7 +89,7 @@ const LicenseItem = ({ license }) => {
             overflow="hidden"
             textOverflow="ellipsis"
           >
-            {license.owner}
+            {app.owner}
           </Typography>
         </Sheet>
       </Stack>
@@ -95,7 +99,7 @@ const LicenseItem = ({ license }) => {
         alignItems="center"
         justifyContent="end"
         spacing={1}
-        pb={2}
+        py={2}
       >
         <IconButton variant="soft" size="sm">
           <DownloadIcon />
@@ -119,15 +123,16 @@ const LicenseItem = ({ license }) => {
           justifyContent: "space-between",
         }}
       >
-        <Typography level="caption">Version {license.version}</Typography>
-        <Typography level="caption">{dayjs(license.date).from()}</Typography>
+        <Typography level="caption">Version {app.version}</Typography>
+        <Typography level="caption">{dayjs(app.date).from()}</Typography>
       </CardOverflow>
     </Card>
   );
 };
 
-LicenseItem.propTypes = {
-  license: licenseType,
+AppItem.propTypes = {
+  app: appType,
+  onClick: PropTypes.func,
 };
 
-export default LicenseItem;
+export default AppItem;
