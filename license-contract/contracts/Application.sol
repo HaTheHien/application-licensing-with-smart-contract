@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.6;
 import "./License.sol";
-import "../lib/stringUtils.sol";
+import "./lib/stringUtils.sol";
 
 contract Application {
     uint constant LICENSE_LIFE_TIME = 30 days;
