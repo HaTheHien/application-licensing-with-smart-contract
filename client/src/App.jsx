@@ -1,3 +1,4 @@
+import AppManagementContextProvider from "context/AppManagementContext";
 import { GlobalRouter } from "routes";
 import { theme } from "utils/theme";
 import { Experimental_CssVarsProvider as CssVarsProvider } from "@mui/material/styles";
@@ -7,7 +8,9 @@ const App = () => {
   return (
     <CssVarsProvider theme={theme}>
       <EtherContextProvider>
-        <GlobalRouter />
+        <AppManagementContextProvider>
+          <GlobalRouter />
+        </AppManagementContextProvider>
       </EtherContextProvider>
     </CssVarsProvider>
   );

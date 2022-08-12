@@ -46,8 +46,8 @@ const AppItemDialog = ({ app, open, openChanged }) => {
 
 AppItemDialog.propTypes = {
   app: appType,
-  open: PropTypes.bool.isRequired,
-  openChanged: PropTypes.func.isRequired,
+  open: PropTypes.bool,
+  openChanged: PropTypes.func,
 };
 
 export default AppItemDialog;

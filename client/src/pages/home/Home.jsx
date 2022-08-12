@@ -1,7 +1,6 @@
 import { Tab, TabList, TabPanel, Tabs, Typography } from "@mui/joy";
 import { Container, Grid } from "@mui/material";
-import AppItem from "components/app/AppItem/AppItem";
-import AppItemDialog from "components/app/Dialog/AppItemDialog";
+import { AppItem, AppItemDialog, AppManagementTab } from "components/app";
 import { useCallback, useState } from "react";
 
 const app = {
@@ -72,12 +71,15 @@ const Home = () => {
           </TabPanel>
 
           <TabPanel value={2}>
-            <Typography level="h6" textAlign="center">
-              🚧 Under construction
-            </Typography>
+            {/*<Typography level="h6" textAlign="center">*/}
+            {/*  🚧 Under construction*/}
+            {/*</Typography>*/}
+
+            <AppManagementTab />
           </TabPanel>
         </Tabs>
       </Container>
+
       <AppItemDialog
         openChanged={setDialogOpen}
         open={dialogOpen}
