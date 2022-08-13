@@ -1,18 +1,23 @@
+import DownloadIcon from "@mui/icons-material/Download";
+import { Button, Sheet, Typography } from "@mui/joy";
+import Card from "@mui/joy/Card";
+import CardOverflow from "@mui/joy/CardOverflow";
+import IconButton from "@mui/joy/IconButton";
+import { Divider, Stack } from "@mui/material";
+import { useEtherContext } from "context";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import PropTypes from "prop-types";
 import { appType } from "types";
-import Card from "@mui/joy/Card";
-import { Divider, Stack } from "@mui/material";
-import { Button, Sheet, Typography } from "@mui/joy";
-import CardOverflow from "@mui/joy/CardOverflow";
-import { ethers } from "ethers";
-import dayjs from "dayjs";
-import DownloadIcon from "@mui/icons-material/Download";
-import relativeTime from "dayjs/plugin/relativeTime";
-import IconButton from "@mui/joy/IconButton";
+import { ETHER_SYMBOL } from "utils";
 
 dayjs.extend(relativeTime);
 
 const AppItem = ({ app, onClick }) => {
+  const {
+    state: { web3 },
+  } = useEtherContext();
+
   return (
     <Card
       onClick={onClick}
@@ -44,9 +49,7 @@ const AppItem = ({ app, onClick }) => {
 
       <Stack direction="row">
         <Typography fontSize="lg" fontWeight="lg">
-          🪙{" "}
-          {ethers.utils.formatEther(BigInt(app.price)).slice(0, 8).toString()}{" "}
-          ETH
+          🪙 {web3.utils.fromWei(app.price).toString()} {ETHER_SYMBOL}
         </Typography>
       </Stack>
 

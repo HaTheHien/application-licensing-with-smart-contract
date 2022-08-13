@@ -10,16 +10,21 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { useAppManagementContext } from "context";
-import { ethers } from "ethers";
+import { useAppManagementContext, useEtherContext } from "context";
 import PropTypes from "prop-types";
 import { useCallback } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { ETHER_SYMBOL } from "utils";
 
 const CreateAppDialog = ({ open, openChanged }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
   const { createNewApp } = useAppManagementContext();
+
+  const {
+    state: { web3 },
+  } = useEtherContext();
+
   const {
     control,
     setValue,
@@ -48,12 +53,10 @@ const CreateAppDialog = ({ open, openChanged }) => {
     try {
       setValue("dateCreated", Date.now());
       const packageName = getValues("packageName");
-      setValue(
-        "id",
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes(packageName))
-      );
+      setValue("id", web3.utils.toBN(web3.utils.soliditySha3(packageName)));
       // setValue("id", ethers.utils.id(packageName));
-      setValue("formattedPrice", ethers.utils.parseEther(getValues("price")));
+      setValue("formattedPrice", web3.utils.toWei(getValues("price"), "ether"));
+
       await trigger();
       if (isValid) {
         await handleSubmit(
@@ -78,6 +81,7 @@ const CreateAppDialog = ({ open, openChanged }) => {
     reset,
     setValue,
     trigger,
+    web3?.utils,
   ]);
 
   const onClose = useCallback(() => openChanged?.call(false), [openChanged]);
@@ -151,14 +155,12 @@ const CreateAppDialog = ({ open, openChanged }) => {
                 size="md"
                 variant="outlined"
                 startDecorator={<Typography>🪙</Typography>}
-                endDecorator={
-                  <Typography>{ethers.constants.EtherSymbol}</Typography>
-                }
+                endDecorator={<Typography>{ETHER_SYMBOL}</Typography>}
                 fullWidth
                 error={!!errors["price"]}
                 helperText={
                   errors?.price?.message ||
-                  `Currency is ETH ${ethers.constants.EtherSymbol}, Enter 0 when the license is free`
+                  `Currency is ETH ${ETHER_SYMBOL}, Enter 0 when the license is free`
                 }
               />
             )}

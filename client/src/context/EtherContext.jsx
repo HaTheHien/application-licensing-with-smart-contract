@@ -1,4 +1,3 @@
-import { ethers } from "ethers";
 import PropTypes from "prop-types";
 import {
   createContext,
@@ -9,6 +8,7 @@ import {
   useReducer,
 } from "react";
 import { etherReducer, initialEtherState } from "stores";
+import getWeb3 from "utils/getWeb3";
 
 const EtherContext = createContext({
   state: initialEtherState,
@@ -22,76 +22,61 @@ export const useEtherContext = () => {
 export const EtherContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(etherReducer, initialEtherState);
 
-  // console.log(state);
+  useEffect(() => {
+    (async () => {
+      try {
+        // const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const web3 = await getWeb3();
+        console.log("Web3 instance: ", web3);
+        dispatch({ type: "SET_PROVIDER", payload: web3 });
 
-  const getWalletInfo = useCallback(async (signer) => {
-    if (!signer) return;
+        if (!web3) {
+          dispatch({ type: "SET_METAMASK_ENABLED", payload: false });
+          return;
+        }
 
-    const balance = ethers.utils.formatEther(await signer.getBalance());
-    const address = await signer.getAddress();
+        const changedAccounts = await web3?.eth.getAccounts();
+        dispatch({ type: "SET_ACCOUNTS", payload: changedAccounts });
+        console.log(`Account address ${changedAccounts}`);
 
-    dispatch({ type: "SET_WALLET_INFO", payload: { balance, address } });
+        dispatch({ type: "SET_METAMASK_ENABLED", payload: true });
+      } catch (e) {
+        console.log(e);
+        dispatch({ type: "SET_METAMASK_ENABLED", payload: false });
+      }
+    })();
   }, []);
 
-  const loadMetamask = useCallback(async () => {
-    try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      dispatch({ type: "SET_PROVIDER", payload: provider });
+  const onAccountChanged = useCallback(
+    async (web3) => {
+      // console.log("web3???", web3);
+      console.log("onAccountChanged");
+      const web3Instance = web3 ?? state?.web3;
 
-      if (!provider) {
-        dispatch({ type: "SET_METAMASK_ENABLED", payload: false });
-        return;
-      }
+      const changedAccounts = await web3Instance?.eth.getAccounts();
+      dispatch({ type: "SET_ACCOUNTS", payload: changedAccounts });
+      console.log(`New accounts ${changedAccounts}`);
+    },
+    [state.web3]
+  );
 
-      const signer = await provider.getSigner();
-      dispatch({ type: "SET_SIGNER", payload: signer });
-      await getWalletInfo(signer);
-
-      const networkId = (await provider.getNetwork()).name;
-      dispatch({ type: "SET_NETWORK_ID", payload: networkId });
-
-      dispatch({ type: "SET_METAMASK_ENABLED", payload: true });
-    } catch (e) {
-      console.log(e);
-      dispatch({ type: "SET_METAMASK_ENABLED", payload: false });
+  useEffect(() => {
+    if (window.ethereum) {
+      window.ethereum.on("accountsChanged", onAccountChanged);
     }
-  }, [getWalletInfo]);
+    return () => {
+      console.log("remove previous listener");
+      window.ethereum.removeListener("accountsChanged", onAccountChanged);
+    };
+  }, [onAccountChanged]);
 
   const contextValue = useMemo(
     () => ({
       state,
       dispatch,
-      getWalletInfo,
-      loadMetamask,
     }),
-    [state, getWalletInfo, loadMetamask]
+    [state]
   );
-
-  useEffect(() => {
-    if (!window.ethereum) {
-      return;
-    }
-
-    window.ethereum
-      .request({ method: "eth_requestAccounts" })
-      .then(() => loadMetamask())
-      .catch((err) => {
-        if (err.code === 4001) {
-          console.log("not connected to metamask");
-        } else {
-          console.log(err);
-        }
-      });
-
-    const cb = () => loadMetamask();
-    window.ethereum.on("chainChanged", cb);
-    window.ethereum.on("accountsChanged", cb);
-
-    return () => {
-      window.ethereum.removeListener("chainChanged", cb);
-      window.ethereum.removeListener("accountsChanged", cb);
-    };
-  }, [loadMetamask]);
 
   return (
     <EtherContext.Provider value={contextValue}>

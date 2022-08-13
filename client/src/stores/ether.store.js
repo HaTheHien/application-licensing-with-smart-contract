@@ -1,10 +1,11 @@
 export const initialEtherState = {
-  ether: null,
-  balance: null,
-  address: null,
-  signer: null,
+  web3: null,
+  // balance: null,
+  // address: null,
+  // signer: null,
   metaMaskEnabled: false,
-  networkId: null,
+  // networkId: null,
+  accounts: null,
 };
 
 export const etherReducer = (state, action) => {
@@ -12,24 +13,25 @@ export const etherReducer = (state, action) => {
     case "SET_PROVIDER": {
       return {
         ...state,
-        ether: action?.payload || state.ether,
+        web3: action?.payload || state.web3,
       };
     }
-    case "SET_SIGNER": {
+    case "SET_ACCOUNTS": {
       return {
         ...state,
-        signer: action?.payload || state.signer,
+        accounts: action?.payload,
       };
     }
     case "SET_METAMASK_ENABLED": {
       const enabled = !!action?.payload;
       const newState = !enabled
         ? {
-            ether: null,
-            balance: null,
-            address: null,
-            signer: null,
+            web3: null,
+            // balance: null,
+            // address: null,
+            // signer: null,
             metaMaskEnabled: false,
+            accounts: null,
           }
         : {};
       return {
@@ -38,19 +40,19 @@ export const etherReducer = (state, action) => {
         ...newState,
       };
     }
-    case "SET_WALLET_INFO": {
-      return {
-        ...state,
-        balance: action?.payload?.balance || state.balance,
-        address: action?.payload?.address || state.address,
-      };
-    }
-    case "SET_NETWORK_ID": {
-      return {
-        ...state,
-        networkId: action.payload,
-      };
-    }
+    // case "SET_WALLET_INFO": {
+    //   return {
+    //     ...state,
+    //     balance: action?.payload?.balance || state.balance,
+    //     address: action?.payload?.address || state.address,
+    //   };
+    // }
+    // case "SET_NETWORK_ID": {
+    //   return {
+    //     ...state,
+    //     networkId: action.payload,
+    //   };
+    // }
     default:
       return state;
   }
