@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Application2.sol";
 
-contract ApplicationManager is Ownable {
+contract ApplicationManager {
   event ApplicationCreated(
     uint256 id,
     uint256 price,
@@ -18,18 +17,21 @@ contract ApplicationManager is Ownable {
   uint256[] public appIds;
   mapping(uint256 => Application2) public applications;
 
-  //  function _isApplicationExist(uint256 _applicationId)
-  //    internal
-  //    view
-  //    returns (bool)
-  //  {
-  //    return applications[_applicationId].id() != 0;
-  //  }
-  //
-  //  function _isApplicationNotExist(uint256 _applicationId)
-  //  internal view returns(bool) {
-  //    return applications[_applicationId].id() = 0;
-  //  }
+  function _isApplicationExist(uint256 _applicationId)
+    internal
+    view
+    returns (bool)
+  {
+    return applications[_applicationId] != Application2(address(0));
+  }
+
+  function _isApplicationNotExist(uint256 _applicationId)
+    internal
+    view
+    returns (bool)
+  {
+    return applications[_applicationId] == Application2(address(0));
+  }
 
   function _createApplication(
     uint256 _appId,
@@ -63,21 +65,21 @@ contract ApplicationManager is Ownable {
     return _app.id();
   }
 
-  function _setPrice(uint256 _appId, uint256 _price) internal {
-    //    require(_isApplicationExist(_appId));
-    applications[_appId].setPrice(_price);
+  //  function _setPrice(uint256 _appId, uint256 _price) internal {
+  //    //    require(_isApplicationExist(_appId));
+  //    applications[_appId].setPrice(_price);
+  //
+  //    emit ApplicationPriceChanged(_appId, _price);
+  //  }
 
-    emit ApplicationPriceChanged(_appId, _price);
-  }
-
-  function _setContentHash(uint256 _appId, string memory _contentHash)
-    internal
-  {
-    //    require(_isApplicationExist(_appId));
-
-    applications[_appId].setContentHash(_contentHash);
-    applications[_appId].setVersion(applications[_appId].version() + 1);
-  }
+  //  function _setContentHash(uint256 _appId, string memory _contentHash)
+  //    internal
+  //  {
+  //    //    require(_isApplicationExist(_appId));
+  //
+  //    applications[_appId].setContentHash(_contentHash);
+  //    applications[_appId].setVersion(applications[_appId].version() + 1);
+  //  }
 
   function _increaseSold(uint256 _appId) internal {
     //    require(_isApplicationExist(_appId));
@@ -91,17 +93,18 @@ contract ApplicationManager is Ownable {
     string memory _contentHash,
     string memory _name,
     uint256 _dateCreated
-  ) public onlyOwner returns (uint256) {
-    return _createApplication(_appId, _price, _contentHash, _name, _dateCreated);
+  ) public returns (uint256) {
+    return
+      _createApplication(_appId, _price, _contentHash, _name, _dateCreated);
   }
 
   function getPrice(uint256 _appId) public view returns (uint256) {
     return applications[_appId].price();
   }
 
-  function setPriceByAppId(uint256 _appId, uint256 _price) external onlyOwner {
-    _setPrice(_appId, _price);
-  }
+  //  function setPriceByAppId(uint256 _appId, uint256 _price) external onlyOwner {
+  //    _setPrice(_appId, _price);
+  //  }
 
   function getContentHashByAppId(uint256 _appId)
     public
@@ -111,11 +114,11 @@ contract ApplicationManager is Ownable {
     return applications[_appId].contentHash();
   }
 
-  function setContentHashByAppId(uint256 _appId, string memory _contentHash)
-    external
-  {
-    _setContentHash(_appId, _contentHash);
-  }
+  //  function setContentHashByAppId(uint256 _appId, string memory _contentHash)
+  //    external
+  //  {
+  //    _setContentHash(_appId, _contentHash);
+  //  }
 
   function getNameByAppId(uint256 _appId) public view returns (string memory) {
     return applications[_appId].name();
