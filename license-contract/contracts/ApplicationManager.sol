@@ -51,6 +51,8 @@ contract ApplicationManager {
       0
     );
 
+    _app.transferOwnership(msg.sender);
+
     applications[_appId] = _app;
     appIds.push(_appId);
 
@@ -163,5 +165,29 @@ contract ApplicationManager {
 
   function getNumberOfApplications() public view returns (uint256) {
     return appIds.length;
+  }
+
+  function getCreatedApplications(address _owner)
+    public
+    view
+    returns (Application2[] memory)
+  {
+    uint256 n = 0;
+    for (uint256 i = 0; i < appIds.length; i++) {
+      if (applications[appIds[i]].owner() == _owner) {
+        n++;
+      }
+    }
+
+    Application2[] memory applicationList = new Application2[](n);
+    uint256 j = 0;
+    for (uint256 i = 0; i < appIds.length; i++) {
+      if (applications[appIds[i]].owner() == _owner) {
+        applicationList[j] = applications[appIds[i]];
+        j++;
+      }
+    }
+
+    return applicationList;
   }
 }

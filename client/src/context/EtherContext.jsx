@@ -62,11 +62,11 @@ export const EtherContextProvider = ({ children }) => {
 
   useEffect(() => {
     if (window.ethereum) {
-      window.ethereum.on("accountsChanged", onAccountChanged);
+      window.ethereum?.on("accountsChanged", onAccountChanged);
     }
     return () => {
       console.log("remove previous listener");
-      window.ethereum.removeListener("accountsChanged", onAccountChanged);
+      window.ethereum?.removeListener("accountsChanged", onAccountChanged);
     };
   }, [onAccountChanged]);
 

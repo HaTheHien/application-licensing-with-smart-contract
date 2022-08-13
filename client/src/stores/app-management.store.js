@@ -1,14 +1,21 @@
 export const initialAppManagementState = {
-  allApps: [],
+  allAppAddresses: [],
   isLoading: false,
+  appManagerContract: null,
 };
 
 export const appManagementReducer = (state, action) => {
   switch (action.type) {
-    case "SET_ALL_APPS": {
+    case "SET_APP_MANAGER_CONTRACT": {
       return {
         ...state,
-        allApps: action?.payload || state.allApps,
+        appManagerContract: action?.payload || state.appManagerContract,
+      };
+    }
+    case "SET_ALL_APPS_ADDRESSES": {
+      return {
+        ...state,
+        allAppAddresses: action?.payload || state.allAppAddresses,
       };
     }
     case "SET_IS_LOADING": {

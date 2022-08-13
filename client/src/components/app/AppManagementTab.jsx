@@ -1,11 +1,19 @@
 import Add from "@mui/icons-material/Add";
-import { Box, Button } from "@mui/joy";
+import { Box, Button, Link, Typography } from "@mui/joy";
 import { Stack } from "@mui/material";
 import CreateAppDialog from "components/app/CreateAppDialog";
+import { useAppManagementContext } from "context";
 import { useCallback, useState } from "react";
 
 const AppManagementTab = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const {
+    state: { allAppAddresses },
+  } = useAppManagementContext();
+
+  const onCreateButtonClicked = useCallback(() => {
+    setDialogOpen(true);
+  }, []);
 
   return (
     <>
@@ -16,13 +24,27 @@ const AppManagementTab = () => {
             size="lg"
             variant="soft"
             startIcon={<Add />}
-            onClick={useCallback(() => {
-              setDialogOpen(true);
-            }, [])}
+            onClick={onCreateButtonClicked}
           >
             Create app
           </Button>
         </Box>
+
+        {allAppAddresses.length === 0 && (
+          <Stack
+            spacing={1}
+            direction="column"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Typography level="h1">📦</Typography>
+            <Typography level="h4">You don&apos;t have any apps</Typography>
+            <Typography>
+              Click <Link onClick={onCreateButtonClicked}>Create App</Link>{" "}
+              button to publish new app to the marketplace
+            </Typography>
+          </Stack>
+        )}
       </Stack>
 
       <CreateAppDialog openChanged={setDialogOpen} open={dialogOpen} />

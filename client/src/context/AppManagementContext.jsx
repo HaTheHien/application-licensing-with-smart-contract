@@ -5,6 +5,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useReducer,
 } from "react";
@@ -27,26 +28,50 @@ const AppManagementContextProvider = ({ children }) => {
 
   const { state: etherState } = useEtherContext();
 
-  const createNewApp = useCallback(
-    async (data) => {
+  // TODO listening to application events from the blockchain
+  useEffect(() => {
+    (async () => {
       const web3 = etherState.web3;
-      console.log("has web3?", web3);
+      // console.log("has web3?", web3);
       const accounts = etherState.accounts ?? [];
-      console.log("accounts?", accounts);
 
-      if (web3 && accounts.length !== 0) {
+      if (web3) {
         const networkId = await web3.eth.net.getId();
         const networks = Object.values(ApplicationManager.networks);
         const deployedNetwork = networks[networkId ?? 0] || networks[0];
-        console.log(deployedNetwork.address);
+        // console.log(deployedNetwork.address);
 
-        const contract = new web3.eth.Contract(
-          ApplicationManager.abi,
-          deployedNetwork && deployedNetwork.address
-        );
-        // console.log(contract.address);
+        try {
+          const contract = new web3.eth.Contract(
+            ApplicationManager.abi,
+            deployedNetwork && deployedNetwork.address
+          );
+          if (contract) {
+            dispatch({ type: "SET_APP_MANAGER_CONTRACT", payload: contract });
+            if (accounts.length !== 0) {
+              const addresses = await contract.methods
+                .getCreatedApplications(accounts[0])
+                .call({ from: accounts[0] });
 
-        const response = await contract.methods
+              // console.log("Application addresses", addresses);
+              dispatch({ type: "SET_ALL_APPS_ADDRESSES", payload: addresses });
+            }
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      }
+    })();
+  }, [etherState?.accounts, etherState?.web3]);
+
+  const createNewApp = useCallback(
+    async (data) => {
+      const web3 = etherState.web3;
+      const accounts = etherState.accounts ?? [];
+      // console.log("accounts?", accounts);
+
+      if (web3 && state.appManagerContract && accounts.length !== 0) {
+        const response = await state.appManagerContract.methods
           .createApplication(
             data.id,
             data.formattedPrice,
@@ -57,20 +82,9 @@ const AppManagementContextProvider = ({ children }) => {
           .send({ from: accounts[0] });
 
         console.log(response);
-
-        // const app2 = await contract.getApplication(ethers.BigNumber.from(14), {
-        //   gasLimit: 500_000,
-        //   from: address,
-        // });
-        // console.log(app2);
-
-        const n = await contract.methods.getNumberOfApplications().call({
-          from: accounts[0],
-        });
-        console.log(n);
       }
     },
-    [etherState.web3, etherState.accounts]
+    [etherState.accounts, etherState.web3, state.appManagerContract]
   );
 
   const contextValue = useMemo(() => {
