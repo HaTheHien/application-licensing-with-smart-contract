@@ -13,13 +13,14 @@ import { ETHER_SYMBOL } from "utils";
 
 dayjs.extend(relativeTime);
 
-const AppItem = ({ app, onClick }) => {
+const AppItem = ({ app, onClick, ...others }) => {
   const {
-    state: { web3 },
+    state: { web3, accounts },
   } = useEtherContext();
 
   return (
     <Card
+      {...others}
       onClick={onClick}
       variant="outlined"
       sx={{
@@ -92,7 +93,7 @@ const AppItem = ({ app, onClick }) => {
             overflow="hidden"
             textOverflow="ellipsis"
           >
-            {app.owner}
+            {app.owner} {app.owner === accounts[0] ? " (me)" : ""}
           </Typography>
         </Sheet>
       </Stack>

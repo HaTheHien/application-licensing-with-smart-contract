@@ -2,13 +2,14 @@ import Add from "@mui/icons-material/Add";
 import { Box, Button, Link, Typography } from "@mui/joy";
 import { Stack } from "@mui/material";
 import CreateAppDialog from "components/app/CreateAppDialog";
+import { AppItem } from "components/app";
 import { useAppManagementContext } from "context";
 import { useCallback, useState } from "react";
 
 const AppManagementTab = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const {
-    state: { allAppAddresses },
+    state: { allAppAddresses, allApps },
   } = useAppManagementContext();
 
   const onCreateButtonClicked = useCallback(() => {
@@ -45,6 +46,12 @@ const AppManagementTab = () => {
             </Typography>
           </Stack>
         )}
+
+        {allApps.map((app) => (
+          <Box pt={1} key={app.id}>
+            <AppItem app={app} />
+          </Box>
+        ))}
       </Stack>
 
       <CreateAppDialog openChanged={setDialogOpen} open={dialogOpen} />

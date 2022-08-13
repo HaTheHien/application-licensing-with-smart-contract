@@ -10,6 +10,7 @@ import {
   useReducer,
 } from "react";
 import { appManagementReducer, initialAppManagementState } from "stores";
+import { ApplicationConverter } from "types";
 
 const AppManagementContext = createContext({
   state: initialAppManagementState,
@@ -28,13 +29,39 @@ const AppManagementContextProvider = ({ children }) => {
 
   const { state: etherState } = useEtherContext();
 
-  // TODO listening to application events from the blockchain
-  useEffect(() => {
-    (async () => {
-      const web3 = etherState.web3;
-      // console.log("has web3?", web3);
-      const accounts = etherState.accounts ?? [];
+  const loadApplicationData = useCallback(async (contract, web3, accounts) => {
+    if (web3) {
+      try {
+        if (accounts.length !== 0) {
+          const addresses = await contract.methods
+            .getCreatedApplications(accounts[0])
+            .call({ from: accounts[0] });
 
+          // console.log("Application addresses", addresses);
+          dispatch({ type: "SET_ALL_APPS_ADDRESSES", payload: addresses });
+
+          // console.log(addresses);
+          const apps = [];
+          for (const address of addresses) {
+            const contractApp = await contract.methods
+              .getApplicationFromAddress(address)
+              .call({ from: accounts[0] });
+            console.log(contractApp);
+            apps.push(ApplicationConverter.fromContract(contractApp, web3));
+          }
+
+          // console.log(apps);
+
+          dispatch({ type: "SET_ALL_APPS", payload: apps });
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  }, []);
+
+  const loadContract = useCallback(
+    async (web3, accounts) => {
       if (web3) {
         const networkId = await web3.eth.net.getId();
         const networks = Object.values(ApplicationManager.networks);
@@ -48,21 +75,25 @@ const AppManagementContextProvider = ({ children }) => {
           );
           if (contract) {
             dispatch({ type: "SET_APP_MANAGER_CONTRACT", payload: contract });
-            if (accounts.length !== 0) {
-              const addresses = await contract.methods
-                .getCreatedApplications(accounts[0])
-                .call({ from: accounts[0] });
-
-              // console.log("Application addresses", addresses);
-              dispatch({ type: "SET_ALL_APPS_ADDRESSES", payload: addresses });
-            }
+            await loadApplicationData(contract, web3, accounts);
           }
         } catch (e) {
           console.log(e);
         }
       }
+    },
+    [loadApplicationData]
+  );
+
+  useEffect(() => {
+    (async () => {
+      const web3 = etherState.web3;
+      // console.log("has web3?", web3);
+      const accounts = etherState.accounts ?? [];
+
+      await loadContract(web3, accounts);
     })();
-  }, [etherState?.accounts, etherState?.web3]);
+  }, [etherState?.accounts, etherState?.web3, loadContract]);
 
   const createNewApp = useCallback(
     async (data) => {
@@ -82,9 +113,15 @@ const AppManagementContextProvider = ({ children }) => {
           .send({ from: accounts[0] });
 
         console.log(response);
+        await loadApplicationData(state.appManagerContract, web3, accounts);
       }
     },
-    [etherState.accounts, etherState.web3, state.appManagerContract]
+    [
+      etherState?.accounts,
+      etherState?.web3,
+      loadApplicationData,
+      state.appManagerContract,
+    ]
   );
 
   const contextValue = useMemo(() => {

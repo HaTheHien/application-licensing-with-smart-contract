@@ -138,28 +138,62 @@ contract ApplicationManager {
     return applications[_appId].sold();
   }
 
+  function getOwnerByAppId(uint256 _appId) public view returns (address) {
+    return applications[_appId].owner();
+  }
+
   function getApplication(uint256 _appId)
     public
     view
     returns (
-      uint256,
-      uint256,
-      string memory,
-      string memory,
-      uint256,
-      uint256,
-      uint256
+      uint256 id,
+      uint256 price,
+      string memory contentHash,
+      string memory name,
+      uint256 dateCreated,
+      uint256 version,
+      uint256 totalSold,
+      address owner
     )
   {
     //    require(_isApplicationExist(_appId));
+    Application2 application = applications[_appId];
     return (
       _appId,
-      getPrice(_appId),
-      getContentHashByAppId(_appId),
-      getNameByAppId(_appId),
-      getDateCreatedByAppId(_appId),
-      getVersionByAppId(_appId),
-      getTotalSoldByAppId(_appId)
+      application.price(),
+      application.contentHash(),
+      application.name(),
+      application.dateCreated(),
+      application.version(),
+      application.sold(),
+      application.owner()
+    );
+  }
+
+  function getApplicationFromAddress(address _appAddress)
+    public
+    view
+    returns (
+      uint256 id,
+      uint256 price,
+      string memory contentHash,
+      string memory name,
+      uint256 dateCreated,
+      uint256 version,
+      uint256 totalSold,
+      address owner
+    )
+  {
+    Application2 application = Application2(_appAddress);
+    return (
+      application.id(),
+      application.price(),
+      application.contentHash(),
+      application.name(),
+      application.dateCreated(),
+      application.version(),
+      application.sold(),
+      application.owner()
     );
   }
 
