@@ -4,6 +4,7 @@ export const initialEtherState = {
   address: null,
   signer: null,
   metaMaskEnabled: false,
+  networkId: null,
 };
 
 export const etherReducer = (state, action) => {
@@ -21,9 +22,20 @@ export const etherReducer = (state, action) => {
       };
     }
     case "SET_METAMASK_ENABLED": {
+      const enabled = !!action?.payload;
+      const newState = !enabled
+        ? {
+            ether: null,
+            balance: null,
+            address: null,
+            signer: null,
+            metaMaskEnabled: false,
+          }
+        : {};
       return {
         ...state,
-        metaMaskEnabled: !!action?.payload,
+        metaMaskEnabled: enabled,
+        ...newState,
       };
     }
     case "SET_WALLET_INFO": {
@@ -31,6 +43,12 @@ export const etherReducer = (state, action) => {
         ...state,
         balance: action?.payload?.balance || state.balance,
         address: action?.payload?.address || state.address,
+      };
+    }
+    case "SET_NETWORK_ID": {
+      return {
+        ...state,
+        networkId: action.payload,
       };
     }
     default:

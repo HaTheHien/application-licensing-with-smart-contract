@@ -1,4 +1,4 @@
-import { Button, Sheet, TextField, Typography, inputClasses } from "@mui/joy";
+import { Button, Sheet, TextField, Typography } from "@mui/joy";
 import {
   Dialog,
   DialogActions,
@@ -10,6 +10,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import { useAppManagementContext } from "context";
 import { ethers } from "ethers";
 import PropTypes from "prop-types";
 import { useCallback } from "react";
@@ -18,7 +19,7 @@ import { Controller, useForm } from "react-hook-form";
 const CreateAppDialog = ({ open, openChanged }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
-
+  const { createNewApp } = useAppManagementContext();
   const {
     control,
     setValue,
@@ -26,6 +27,7 @@ const CreateAppDialog = ({ open, openChanged }) => {
     formState: { errors, isValid },
     handleSubmit,
     reset,
+    trigger,
   } = useForm({
     defaultValues: {
       id: "",
@@ -39,6 +41,7 @@ const CreateAppDialog = ({ open, openChanged }) => {
       price: "",
       formattedPrice: null,
     },
+    mode: "onBlur",
   });
 
   const submit = useCallback(async () => {
@@ -49,15 +52,15 @@ const CreateAppDialog = ({ open, openChanged }) => {
         "id",
         ethers.utils.keccak256(ethers.utils.toUtf8Bytes(packageName))
       );
-      setValue(
-        "formattedPrice",
-        ethers.utils.formatUnits(getValues("price"), "ether")
-      );
+      // setValue("id", ethers.utils.id(packageName));
+      setValue("formattedPrice", ethers.utils.parseEther(getValues("price")));
+      await trigger();
       if (isValid) {
         await handleSubmit(
           async (data) => {
             console.log(data);
             openChanged?.call(false);
+            await createNewApp(data);
             reset();
           },
           (errors) => console.log(errors)
@@ -66,7 +69,16 @@ const CreateAppDialog = ({ open, openChanged }) => {
     } catch (e) {
       console.log(e);
     }
-  }, [getValues, handleSubmit, isValid, openChanged, reset, setValue]);
+  }, [
+    createNewApp,
+    getValues,
+    handleSubmit,
+    isValid,
+    openChanged,
+    reset,
+    setValue,
+    trigger,
+  ]);
 
   const onClose = useCallback(() => openChanged?.call(false), [openChanged]);
 
@@ -160,7 +172,6 @@ const CreateAppDialog = ({ open, openChanged }) => {
               <MuiTextField
                 required
                 {...field}
-                className={inputClasses}
                 label="Description"
                 size="md"
                 variant="outlined"
@@ -177,6 +188,10 @@ const CreateAppDialog = ({ open, openChanged }) => {
         </Stack>
 
         <DialogActions>
+          <Button onClick={onClose} autoFocus variant="text">
+            Cancel
+          </Button>
+
           <Button onClick={submit} autoFocus variant="soft">
             OK
           </Button>

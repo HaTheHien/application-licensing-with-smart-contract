@@ -38,9 +38,17 @@ export const EtherContextProvider = ({ children }) => {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       dispatch({ type: "SET_PROVIDER", payload: provider });
 
+      if (!provider) {
+        dispatch({ type: "SET_METAMASK_ENABLED", payload: false });
+        return;
+      }
+
       const signer = await provider.getSigner();
       dispatch({ type: "SET_SIGNER", payload: signer });
       await getWalletInfo(signer);
+
+      const networkId = (await provider.getNetwork()).name;
+      dispatch({ type: "SET_NETWORK_ID", payload: networkId });
 
       dispatch({ type: "SET_METAMASK_ENABLED", payload: true });
     } catch (e) {
