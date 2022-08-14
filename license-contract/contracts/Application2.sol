@@ -30,7 +30,7 @@ contract Application2 is Ownable {
   License2[] licenses;
 
   mapping(address => License2) ownerLicense;
-  mapping(uint256 => uint256) lisenseIndex;
+  mapping(License2 => uint256) licenseIndex;
 
   constructor(
     uint256 _id,
@@ -51,16 +51,22 @@ contract Application2 is Ownable {
     applicationManager = ApplicationManager(msg.sender);
   }
 
-  function _isLicenseValid(uint256 _licenseId) internal view returns (bool) {
-    return getApplicationId(_licenseId) != 0;
+  modifier priceOk(uint256 _price) {
+    require(_price >= price, "Not enough amount to buy this license");
+
+    _;
   }
 
-  function _createLicense(uint256 _appId, address _licenseOwner)
+  function _isLicenseValid(uint256 _licenseId) internal view returns (bool) {
+    return licenses[_licenseId] != License2(address(0));
+  }
+
+  function _createLicense(address payable _licenseOwner)
     internal
     returns (uint256)
   {
     License2 l = new License2(
-      _appId,
+      id,
       block.timestamp,
       LICENSE_LIFE_TIME + block.timestamp,
       _licenseOwner
@@ -68,10 +74,13 @@ contract Application2 is Ownable {
 
     uint256 licenseId = licenses.length;
     licenses.push(l);
+    ownerLicense[_licenseOwner] = l;
+    licenseIndex[l] = licenses.length - 1;
+
     emit LicenseCreated(
       Ownable.owner(),
       _licenseOwner,
-      _appId,
+      id,
       licenseId,
       l.dateCreated(),
       l.dateExpired()
@@ -108,19 +117,55 @@ contract Application2 is Ownable {
     );
   }
 
-  function setPrice(uint256 _price) onlyOwner public {
+  function setPrice(uint256 _price) public onlyOwner {
     price = _price;
   }
 
-  function setContentHash(string memory _contentHash) onlyOwner public {
+  function setContentHash(string memory _contentHash) public onlyOwner {
     contentHash = _contentHash;
   }
 
-  function setVersion(uint256 _version) onlyOwner public {
+  function setVersion(uint256 _version) public onlyOwner {
     version = _version;
   }
 
-  function setSoldNumber(uint256 _sold) onlyOwner public {
+  function setSoldNumber(uint256 _sold) public onlyOwner {
     sold = _sold;
+  }
+
+  function getAllLicenses() external view returns (License2[] memory) {
+    return licenses;
+  }
+
+  function getLicenseStruct(address _ownerAddress)
+    public
+    view
+    returns (
+      uint256,
+      uint256,
+      uint256
+    )
+  {
+    require(address(ownerLicense[_ownerAddress]) != address(0), "License not found");
+
+    License2 license = ownerLicense[_ownerAddress];
+    return (
+      license.applicationId(),
+      license.dateCreated(),
+      license.dateExpired()
+    );
+  }
+
+  function getLicenseFromAddress(address _ownerAddress)
+    external
+    view
+    returns (License2)
+  {
+    return ownerLicense[_ownerAddress];
+  }
+
+  receive() external payable priceOk(msg.value) {
+    payable(address(Ownable.owner())).transfer(msg.value);
+    _createLicense(payable(msg.sender));
   }
 }

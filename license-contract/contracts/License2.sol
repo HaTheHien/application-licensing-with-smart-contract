@@ -18,7 +18,7 @@ contract License2 is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
     uint256 _applicationId,
     uint256 _dateCreated,
     uint256 _dateExpired,
-    address _licenseOwner
+    address payable _licenseOwner
   ) ERC721("LicenseToken", "L2") {
     applicationId = _applicationId;
     dateCreated = _dateCreated;

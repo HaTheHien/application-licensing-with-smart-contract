@@ -2,6 +2,7 @@
 pragma solidity ^0.8.4;
 
 import "./Application2.sol";
+import "./License2.sol";
 
 contract ApplicationManager {
   event ApplicationCreated(
@@ -22,7 +23,7 @@ contract ApplicationManager {
     view
     returns (bool)
   {
-    return applications[_applicationId] != Application2(address(0));
+    return address(applications[_applicationId]) != address(0);
   }
 
   function _isApplicationNotExist(uint256 _applicationId)
@@ -30,7 +31,7 @@ contract ApplicationManager {
     view
     returns (bool)
   {
-    return applications[_applicationId] == Application2(address(0));
+    return address(applications[_applicationId]) == address(0);
   }
 
   function _createApplication(
@@ -40,7 +41,7 @@ contract ApplicationManager {
     string memory _name,
     uint256 _dateCreated
   ) internal returns (uint256) {
-    //    require(_isApplicationExist(_appId) == false);
+    require(_isApplicationNotExist(_appId));
 
     Application2 _app = new Application2(
       _appId,
@@ -84,7 +85,7 @@ contract ApplicationManager {
   //  }
 
   function _increaseSold(uint256 _appId) internal {
-    //    require(_isApplicationExist(_appId));
+    require(_isApplicationExist(_appId));
 
     applications[_appId].setSoldNumber(applications[_appId].sold() + 1);
   }
@@ -156,7 +157,7 @@ contract ApplicationManager {
       address owner
     )
   {
-    //    require(_isApplicationExist(_appId));
+    require(_isApplicationExist(_appId));
     Application2 application = applications[_appId];
     return (
       _appId,
@@ -170,7 +171,7 @@ contract ApplicationManager {
     );
   }
 
-  function getApplicationFromAddress(address _appAddress)
+  function getApplicationFromAddress(address payable _appAddress)
     public
     view
     returns (
@@ -223,5 +224,47 @@ contract ApplicationManager {
     }
 
     return applicationList;
+  }
+
+  function getAllApplications() public view returns (Application2[] memory) {
+    Application2[] memory applicationList = new Application2[](appIds.length);
+
+    for (uint256 i = 0; i < appIds.length; i++) {
+      applicationList[i] = applications[appIds[i]];
+    }
+
+    return applicationList;
+  }
+
+  function getAllLicensesOf(address _licenseOwner)
+    public
+    view
+    returns (License2[] memory)
+  {
+    uint256 n = 0;
+    for (uint256 i = 0; i < appIds.length; i++) {
+      Application2 application = applications[appIds[i]];
+      if (application.owner() != _licenseOwner) {
+        License2 license = application.getLicenseFromAddress(_licenseOwner);
+        if (address(license) != address(0)) {
+          n++;
+        }
+      }
+    }
+
+    License2[] memory allLicenses = new License2[](n);
+    uint256 j = 0;
+    for (uint256 i = 0; i < appIds.length; i++) {
+      Application2 application = applications[appIds[i]];
+      if (application.owner() != _licenseOwner) {
+        License2 license = application.getLicenseFromAddress(_licenseOwner);
+        if (address(license) != address(0)) {
+          allLicenses[j] = license;
+          j++;
+        }
+      }
+    }
+
+    return allLicenses;
   }
 }
