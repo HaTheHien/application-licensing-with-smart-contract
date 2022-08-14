@@ -84,7 +84,10 @@ const CreateAppDialog = ({ open, openChanged }) => {
     web3?.utils,
   ]);
 
-  const onClose = useCallback(() => openChanged?.call(false), [openChanged]);
+  const onClose = useCallback(() => {
+    reset();
+    openChanged?.call(false);
+  }, [openChanged, reset]);
 
   return (
     <Dialog open={!!open} onClose={onClose} fullScreen={fullScreen}>

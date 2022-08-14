@@ -8,6 +8,7 @@ import { useEtherContext } from "context";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import PropTypes from "prop-types";
+import { useMemo } from "react";
 import { appType } from "types";
 import { ETHER_SYMBOL } from "utils";
 
@@ -17,6 +18,14 @@ const AppItem = ({ app, onClick, ...others }) => {
   const {
     state: { web3, accounts },
   } = useEtherContext();
+
+  const isDownloadable = useMemo(() => {
+    return app.contentHash !== "";
+  }, [app.contentHash]);
+
+  const isAppOwner = useMemo(() => {
+    return app?.owner === accounts[0];
+  }, [accounts, app?.owner]);
 
   return (
     <Card
@@ -93,7 +102,7 @@ const AppItem = ({ app, onClick, ...others }) => {
             overflow="hidden"
             textOverflow="ellipsis"
           >
-            {app.owner} {app.owner === accounts[0] ? " (me)" : ""}
+            {app.owner} {isAppOwner ? " (me)" : ""}
           </Typography>
         </Sheet>
       </Stack>
@@ -105,12 +114,14 @@ const AppItem = ({ app, onClick, ...others }) => {
         spacing={1}
         py={2}
       >
-        <IconButton variant="soft" size="sm">
+        <IconButton variant="soft" size="sm" disabled={!isDownloadable}>
           <DownloadIcon />
         </IconButton>
-        <Button variant="solid" size="sm">
-          Buy license
-        </Button>
+        {!isAppOwner && (
+          <Button variant="solid" size="sm">
+            Buy license
+          </Button>
+        )}
       </Stack>
 
       <CardOverflow

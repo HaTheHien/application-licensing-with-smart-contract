@@ -9,7 +9,7 @@ import { useCallback, useState } from "react";
 const AppManagementTab = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const {
-    state: { allAppAddresses, allApps },
+    state: { allPublishedAppAddresses, allPublishedApps },
   } = useAppManagementContext();
 
   const onCreateButtonClicked = useCallback(() => {
@@ -18,8 +18,12 @@ const AppManagementTab = () => {
 
   return (
     <>
-      <Stack direction="column" spacing={1} py={1}>
-        <Box width={1} display="flex" justifyContent="end">
+      <Stack direction="column" spacing={1}>
+        <Typography level="h6" textAlign="center">
+          🚧 Under construction
+        </Typography>
+
+        <Box width={1} display="flex" justifyContent="end" pt={1}>
           <Button
             color="primary"
             size="lg"
@@ -31,7 +35,7 @@ const AppManagementTab = () => {
           </Button>
         </Box>
 
-        {allAppAddresses.length === 0 && (
+        {allPublishedAppAddresses.length === 0 && (
           <Stack
             spacing={1}
             direction="column"
@@ -47,7 +51,7 @@ const AppManagementTab = () => {
           </Stack>
         )}
 
-        {allApps.map((app) => (
+        {allPublishedApps.map((app) => (
           <Box pt={1} key={app.id}>
             <AppItem app={app} />
           </Box>

@@ -20,7 +20,7 @@ const AppItemDialog = ({ app, open, openChanged }) => {
   const onClose = useCallback(() => openChanged?.call(false), [openChanged]);
 
   return (
-    <Dialog open={open} onClose={onClose} fullScreen={fullScreen}>
+    <Dialog open={!!open} onClose={onClose} fullScreen={fullScreen}>
       {app && (
         <>
           <DialogTitle sx={{ minWidth: 400 }} component={Sheet}>
