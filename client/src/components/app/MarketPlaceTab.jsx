@@ -1,5 +1,6 @@
 import { Typography } from "@mui/joy";
 import { Grid, Stack } from "@mui/material";
+import AppLoadingProgressIndicator from "components/app/AppLoadingProgressIndicator";
 import { AppItem, AppItemDialog } from "components/app/index";
 import { useAppManagementContext } from "context";
 import { useState } from "react";
@@ -9,7 +10,7 @@ const MarketPlaceTab = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const {
-    state: { allApps },
+    state: { allApps, isLoading },
   } = useAppManagementContext();
 
   // const {
@@ -28,32 +29,38 @@ const MarketPlaceTab = () => {
           🚧 Under construction
         </Typography>
 
-        <Grid container rowGap={1} columnGap={1} py={2}>
-          {allApps.map((app, idx) => (
-            <Grid item xs={4} key={idx}>
-              <AppItem
-                app={app}
-                onClick={() => {
-                  setSelectedApp(app);
-                  setDialogOpen(true);
-                }}
-              />
-            </Grid>
-          ))}
-        </Grid>
+        {isLoading && <AppLoadingProgressIndicator />}
 
-        {allApps.length === 0 && (
-          <Stack
-            spacing={1}
-            direction="column"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Typography level="h1">📦</Typography>
-            <Typography level="h4">
-              There is no any apps on the marketplace yat
-            </Typography>
-          </Stack>
+        {!isLoading && (
+          <>
+            <Grid container py={2}>
+              {allApps.map((app, idx) => (
+                <Grid item xs={4} key={idx} px={0.5} py={0.5}>
+                  <AppItem
+                    app={app}
+                    onClick={() => {
+                      setSelectedApp(app);
+                      setDialogOpen(true);
+                    }}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+
+            {allApps.length === 0 && (
+              <Stack
+                spacing={1}
+                direction="column"
+                alignItems="center"
+                justifyContent="center"
+              >
+                <Typography level="h1">📦</Typography>
+                <Typography level="h4">
+                  There is no any apps on the marketplace yat
+                </Typography>
+              </Stack>
+            )}
+          </>
         )}
       </Stack>
 

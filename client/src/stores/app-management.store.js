@@ -49,7 +49,7 @@ export const appManagementReducer = (state, action) => {
     case "SET_IS_LOADING": {
       return {
         ...state,
-        isLoading: action?.payload || state.isLoading,
+        isLoading: action?.payload,
       };
     }
     default:

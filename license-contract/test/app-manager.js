@@ -20,20 +20,8 @@ contract("ApplicationManager", (accounts) => {
   it("...should create new app", async () => {
     const appManagerInstance = await ApplicationManager.new();
 
-    const id = web3.utils.toBN(
-      web3.utils.soliditySha3("com.example.application")
-    );
-    const price = web3.utils.toWei("0.5", "ether");
-    const contentHash = "";
-    const name = "Gallery one";
-    const timestamp = web3.utils.toBN("1660299317772");
-
     const receipt = await appManagerInstance.createApplication(
-      id,
-      price,
-      contentHash,
-      name,
-      timestamp,
+      ...Object.values(app1),
       { from: accounts[0] }
     );
     console.log(receipt);
@@ -144,13 +132,21 @@ contract("ApplicationManager", (accounts) => {
     });
 
     const applications2 = await appManagerInstance.getAllApplications();
-    assert.equal(applications2.length, 1, "Application list's length should be 1");
+    assert.equal(
+      applications2.length,
+      1,
+      "Application list's length should be 1"
+    );
 
     await appManagerInstance.createApplication(...Object.values(app2), {
       from: accounts[1],
     });
 
     const applications3 = await appManagerInstance.getAllApplications();
-    assert.equal(applications3.length, 2, "Application list's length should be 2");
+    assert.equal(
+      applications3.length,
+      2,
+      "Application list's length should be 2"
+    );
   });
 });

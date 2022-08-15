@@ -45,7 +45,7 @@ contract("Application2", (accounts) => {
 
     const appContract = await Application2.at(appAddress[0]);
 
-    const result = await appContract.send(web3.utils.toWei("0.5", "ether"), {
+    await appContract.send(web3.utils.toWei("0.5", "ether"), {
       from: accounts[1],
     });
     // console.log(result);

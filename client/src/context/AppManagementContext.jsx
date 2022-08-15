@@ -43,11 +43,13 @@ const AppManagementContextProvider = ({ children }) => {
   const loadPublishedApplicationData = useCallback(
     async (contract, web3, accounts) => {
       dispatch({ type: "SET_IS_LOADING", payload: true });
-      const data = ApplicationContractService.loadPublishedApplicationData(
-        contract,
-        web3,
-        accounts
-      );
+      const data =
+        await ApplicationContractService.loadPublishedApplicationData(
+          contract,
+          web3,
+          accounts
+        );
+      console.log(data);
       dispatch({ type: "SET_APP_DATA_FROM_CONTRACT", payload: data });
       dispatch({ type: "SET_IS_LOADING", payload: false });
     },
