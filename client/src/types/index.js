@@ -1,2 +1,3 @@
 export * from "./app-type";
-export * from "./converter";
+export * from "./app-converter";
+export * from "./license-converter";

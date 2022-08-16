@@ -30,16 +30,16 @@ contract("ApplicationManager", (accounts) => {
       from: accounts[0],
     });
 
-    const app = await appManagerInstance.getApplication(id);
+    const app = await appManagerInstance.getApplication(app1.id);
     console.log(app);
 
     // console.log(price);
     assert.equal(n.toNumber(), 1, "Application did not create");
-    assert.equal(app.id.eq(id), true, "Wrong APP ID");
-    assert.equal(app.price.eq(web3.utils.toBN(price)), true, "Wrong price");
-    assert.equal(app.contentHash, contentHash, "Wrong content hash");
-    assert.equal(app.name, name, "Wrong name");
-    assert.equal(app.dateCreated.eq(timestamp), true, "Wrong timestamp");
+    assert.equal(app.id.eq(app1.id), true, "Wrong APP ID");
+    assert.equal(app.price.eq(web3.utils.toBN(app1.price)), true, "Wrong price");
+    assert.equal(app.contentHash, app1.contentHash, "Wrong content hash");
+    assert.equal(app.name, app1.name, "Wrong name");
+    assert.equal(app.dateCreated.eq(app1.timestamp), true, "Wrong timestamp");
   });
 
   it("...should get created applications", async () => {

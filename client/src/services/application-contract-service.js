@@ -1,3 +1,4 @@
+import Application2 from "contracts/Application2.json";
 import { ApplicationConverter } from "types";
 
 async function loadApplicationDataFromAddress(
@@ -80,8 +81,27 @@ async function loadApplicationData(contract, web3, accounts) {
   };
 }
 
+async function createNewApp(contract, data, accounts, web3) {
+  return await contract.methods
+    .createApplication(...ApplicationConverter.toContract(data, web3))
+    .send({ from: accounts[0] });
+}
+
+async function purchaseLicense(contract, appAddress, price, accounts, web3) {
+  const appContract = new web3.eth.Contract(Application2.abi, appAddress);
+  if (!appContract) {
+    throw "App contract not found";
+  }
+
+  return await appContract.methods.send(web3.utils.toBN(price), {
+    from: accounts[1],
+  });
+}
+
 export const ApplicationContractService = {
   // loadApplicationDataFromAddress,
   loadApplicationData,
   loadPublishedApplicationData,
+  createNewApp,
+  purchaseLicense,
 };

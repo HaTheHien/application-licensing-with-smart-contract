@@ -114,8 +114,8 @@ contract("Application2", (accounts) => {
       assert.fail("The transaction should have thrown an error");
     } catch (e) {
       assert.include(
-        e.message,
-        "Revert",
+        e.message.toLowerCase(),
+        "revert",
         "The error message should contain 'revert'"
       );
     }
