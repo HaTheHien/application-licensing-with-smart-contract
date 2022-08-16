@@ -5,7 +5,7 @@ import { ETHER_SYMBOL } from "utils";
 
 dayjs.extend(LocalizedFormat);
 
-export function useAppItem(app, web3, accounts) {
+export function useAppItem(app, web3, accounts, allLisenses) {
   const isDownloadable = useMemo(() => {
     return app?.contentHash !== "";
   }, [app?.contentHash]);
@@ -24,10 +24,23 @@ export function useAppItem(app, web3, accounts) {
     return dayjs(app?.date).format("LLLL");
   }, [app?.date]);
 
+  const isLicenseOwner = useMemo(() => {
+    return (
+      allLisenses &&
+      allLisenses.findIndex((license) => {
+        return (
+          license.appId === app?.id &&
+          dayjs(license.dateExpired * 1000).isAfter(dayjs())
+        );
+      }) !== -1
+    );
+  }, [allLisenses, app?.id]);
+
   return {
     isAppOwner,
     isDownloadable,
     formattedPrice,
     formattedDateCreated,
+    isLicenseOwner,
   };
 }

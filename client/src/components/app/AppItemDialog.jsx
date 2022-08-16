@@ -10,6 +10,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { useEtherContext } from "context";
+import { useLicenseManagementContext } from "context/LicenseManagementContext";
 import { useAppItem } from "hooks";
 import PropTypes from "prop-types";
 import { useCallback } from "react";
@@ -21,13 +22,13 @@ const AppItemDialog = ({ app, open, openChanged, onPurchaseButtonClicked }) => {
   const {
     state: { web3, accounts },
   } = useEtherContext();
+  const {
+    state: { licenses },
+  } = useLicenseManagementContext();
 
   const onClose = useCallback(() => openChanged?.call(false), [openChanged]);
-  const { isAppOwner, formattedPrice, formattedDateCreated } = useAppItem(
-    app,
-    web3,
-    accounts
-  );
+  const { isAppOwner, formattedPrice, formattedDateCreated, isLicenseOwner } =
+    useAppItem(app, web3, accounts, licenses);
 
   return (
     <Dialog open={!!open} onClose={onClose} fullScreen={fullScreen}>
@@ -64,7 +65,7 @@ const AppItemDialog = ({ app, open, openChanged, onPurchaseButtonClicked }) => {
                   overflow="hidden"
                   textOverflow="ellipsis"
                 >
-                  {app.owner}
+                  {isAppOwner ? "me" : app.owner}
                 </Typography>
               </Stack>
 
@@ -91,7 +92,7 @@ const AppItemDialog = ({ app, open, openChanged, onPurchaseButtonClicked }) => {
                 OK
               </Button>
 
-              {!isAppOwner && (
+              {!isAppOwner && !isLicenseOwner && (
                 <Button variant="solid" onClick={onPurchaseButtonClicked}>
                   Buy license
                 </Button>

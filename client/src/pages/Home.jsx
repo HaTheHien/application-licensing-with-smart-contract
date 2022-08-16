@@ -11,6 +11,7 @@ import {
   Stack,
 } from "@mui/material";
 import { AppManagementTab, MarketplaceTab } from "components/app";
+import { LicenseManagementTab } from "components/license";
 import { useLicenseManagementContext } from "context/LicenseManagementContext";
 import { useCallback, useState } from "react";
 
@@ -66,9 +67,7 @@ const Home = () => {
           </TabPanel>
 
           <TabPanel value={1}>
-            <Typography level="h6" textAlign="center">
-              🚧 Under construction
-            </Typography>
+            <LicenseManagementTab />
           </TabPanel>
 
           <TabPanel value={2}>

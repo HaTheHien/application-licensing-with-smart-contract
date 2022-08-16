@@ -1,3 +1,4 @@
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DownloadIcon from "@mui/icons-material/Download";
 import { Button, Sheet, Typography } from "@mui/joy";
 import Card from "@mui/joy/Card";
@@ -5,6 +6,7 @@ import CardOverflow from "@mui/joy/CardOverflow";
 import IconButton from "@mui/joy/IconButton";
 import { Divider, Stack } from "@mui/material";
 import { useEtherContext } from "context";
+import { useLicenseManagementContext } from "context/LicenseManagementContext";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useAppItem } from "hooks";
@@ -17,12 +19,12 @@ const AppItem = ({ app, onClick, onPurchaseButtonClicked, ...others }) => {
   const {
     state: { web3, accounts },
   } = useEtherContext();
+  const {
+    state: { licenses },
+  } = useLicenseManagementContext();
 
-  const { isDownloadable, isAppOwner, formattedPrice } = useAppItem(
-    app,
-    web3,
-    accounts
-  );
+  const { isDownloadable, isAppOwner, formattedPrice, isLicenseOwner } =
+    useAppItem(app, web3, accounts, licenses);
 
   return (
     <Card
@@ -99,7 +101,7 @@ const AppItem = ({ app, onClick, onPurchaseButtonClicked, ...others }) => {
             overflow="hidden"
             textOverflow="ellipsis"
           >
-            {app.owner} {isAppOwner ? " (me)" : ""}
+            {isAppOwner ? "me" : app.owner}
           </Typography>
         </Sheet>
       </Stack>
@@ -111,11 +113,19 @@ const AppItem = ({ app, onClick, onPurchaseButtonClicked, ...others }) => {
         spacing={1}
         py={2}
       >
+        {isLicenseOwner && (
+          <Stack direction="row" alignItems="center" spacing={0.5}>
+            <CheckCircleIcon color="success" />
+            <Typography color="success">Purchased</Typography>
+          </Stack>
+        )}
+        {isAppOwner && <Typography>My app</Typography>}
+
         <IconButton variant="soft" size="sm" disabled={!isDownloadable}>
           <DownloadIcon />
         </IconButton>
 
-        {!isAppOwner && (
+        {!isAppOwner && !isLicenseOwner && (
           <Button variant="solid" size="sm" onClick={onPurchaseButtonClicked}>
             Buy license
           </Button>

@@ -76,6 +76,7 @@ contract Application2 is Ownable {
     licenses.push(l);
     ownerLicense[_licenseOwner] = l;
     licenseIndex[l] = licenses.length - 1;
+    sold++;
 
     emit LicenseCreated(
       Ownable.owner(),
@@ -146,7 +147,10 @@ contract Application2 is Ownable {
       uint256
     )
   {
-    require(address(ownerLicense[_ownerAddress]) != address(0), "License not found");
+    require(
+      address(ownerLicense[_ownerAddress]) != address(0),
+      "License not found"
+    );
 
     License2 license = ownerLicense[_ownerAddress];
     return (
