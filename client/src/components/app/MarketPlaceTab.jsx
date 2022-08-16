@@ -13,15 +13,6 @@ const MarketPlaceTab = () => {
     state: { allApps, isLoading },
   } = useAppManagementContext();
 
-  // const {
-  //   state: { accounts },
-  // } = useEtherContext();
-
-  // const displayedApp = useMemo(() => {
-  //   if (!accounts) return [];
-  //   return allApps.filter((app) => app?.owner !== accounts[0]);
-  // }, [accounts, allApps]);
-
   return (
     <>
       <Stack direction="column" spacing={1}>

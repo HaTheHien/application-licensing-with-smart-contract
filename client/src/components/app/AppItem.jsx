@@ -7,8 +7,8 @@ import { Divider, Stack } from "@mui/material";
 import { useEtherContext } from "context";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { useAppItem } from "hooks";
 import PropTypes from "prop-types";
-import { useMemo } from "react";
 import { appType } from "types";
 import { ETHER_SYMBOL } from "utils";
 
@@ -19,13 +19,7 @@ const AppItem = ({ app, onClick, ...others }) => {
     state: { web3, accounts },
   } = useEtherContext();
 
-  const isDownloadable = useMemo(() => {
-    return app.contentHash !== "";
-  }, [app.contentHash]);
-
-  const isAppOwner = useMemo(() => {
-    return app?.owner === accounts[0];
-  }, [accounts, app?.owner]);
+  const { isDownloadable, isAppOwner } = useAppItem(app, accounts);
 
   return (
     <Card

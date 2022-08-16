@@ -10,7 +10,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { useAppManagementContext, useEtherContext } from "context";
+import { useAppManagementContext } from "context";
 import PropTypes from "prop-types";
 import { useCallback } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -22,20 +22,14 @@ const CreateAppDialog = ({ open, openChanged }) => {
   const { createNewApp } = useAppManagementContext();
 
   const {
-    state: { web3 },
-  } = useEtherContext();
-
-  const {
     control,
     setValue,
-    getValues,
-    formState: { errors, isValid },
+    formState: { errors },
     handleSubmit,
     reset,
-    trigger,
   } = useForm({
     defaultValues: {
-      id: "",
+      // id: "",
       packageName: "",
       name: "",
       dateCreated: 0,
@@ -44,7 +38,7 @@ const CreateAppDialog = ({ open, openChanged }) => {
       content: "",
       version: 0,
       price: "",
-      formattedPrice: null,
+      // formattedPrice: null,
     },
     mode: "onBlur",
   });
@@ -52,37 +46,19 @@ const CreateAppDialog = ({ open, openChanged }) => {
   const submit = useCallback(async () => {
     try {
       setValue("dateCreated", Date.now());
-      const packageName = getValues("packageName");
-      setValue("id", web3.utils.toBN(web3.utils.soliditySha3(packageName)));
-      // setValue("id", ethers.utils.id(packageName));
-      setValue("formattedPrice", web3.utils.toWei(getValues("price"), "ether"));
-
-      await trigger();
-      if (isValid) {
-        await handleSubmit(
-          async (data) => {
-            console.log(data);
-            openChanged?.call(false);
-            await createNewApp(data);
-            reset();
-          },
-          (errors) => console.log(errors)
-        )();
-      }
+      await handleSubmit(
+        async (data) => {
+          console.log(data);
+          openChanged?.call(false);
+          await createNewApp(data);
+          reset();
+        },
+        (errors) => console.log(errors)
+      )();
     } catch (e) {
       console.log(e);
     }
-  }, [
-    createNewApp,
-    getValues,
-    handleSubmit,
-    isValid,
-    openChanged,
-    reset,
-    setValue,
-    trigger,
-    web3?.utils,
-  ]);
+  }, [createNewApp, handleSubmit, openChanged, reset, setValue]);
 
   const onClose = useCallback(() => {
     reset();

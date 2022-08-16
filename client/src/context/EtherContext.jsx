@@ -83,9 +83,11 @@ export const EtherContextProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    if (state.web3) {
-      loadContract(state.web3);
-    }
+    (async () => {
+      if (state.web3) {
+        await loadContract(state.web3);
+      }
+    })();
   }, [loadContract, state.web3]);
 
   useEffect(() => {
