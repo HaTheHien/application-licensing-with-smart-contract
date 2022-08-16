@@ -2,16 +2,27 @@ import { Typography } from "@mui/joy";
 import { Grid, Stack } from "@mui/material";
 import AppLoadingProgressIndicator from "components/app/AppLoadingProgressIndicator";
 import { AppItem, AppItemDialog } from "components/app/index";
+import { BuyLicenseDialog } from "components/license";
 import { useAppManagementContext } from "context";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 const MarketPlaceTab = () => {
   const [selectedApp, setSelectedApp] = useState(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [appDialogOpen, setAppDialogOpen] = useState(false);
+  const [purchaseDialogOpen, setPurchaseDialogOpen] = useState(false);
 
   const {
     state: { allApps, isLoading },
+    purchaseLicense,
   } = useAppManagementContext();
+
+  const purchaseLicenseCb = useCallback(async () => {
+    setPurchaseDialogOpen(false);
+    console.log(selectedApp);
+    if (selectedApp) {
+      await purchaseLicense(selectedApp);
+    }
+  }, [purchaseLicense, selectedApp]);
 
   return (
     <>
@@ -31,7 +42,12 @@ const MarketPlaceTab = () => {
                     app={app}
                     onClick={() => {
                       setSelectedApp(app);
-                      setDialogOpen(true);
+                      setAppDialogOpen(true);
+                    }}
+                    onPurchaseButtonClicked={(e) => {
+                      setSelectedApp(app);
+                      e?.stopPropagation();
+                      setPurchaseDialogOpen(true);
                     }}
                   />
                 </Grid>
@@ -56,9 +72,20 @@ const MarketPlaceTab = () => {
       </Stack>
 
       <AppItemDialog
-        openChanged={setDialogOpen}
-        open={dialogOpen}
+        openChanged={setAppDialogOpen}
+        open={appDialogOpen}
         app={selectedApp}
+        onPurchaseButtonClicked={useCallback(() => {
+          setAppDialogOpen(false);
+          setPurchaseDialogOpen(true);
+        }, [])}
+      />
+
+      <BuyLicenseDialog
+        open={purchaseDialogOpen}
+        openChanged={setPurchaseDialogOpen}
+        app={selectedApp}
+        onPurchaseButtonClicked={purchaseLicenseCb}
       />
     </>
   );

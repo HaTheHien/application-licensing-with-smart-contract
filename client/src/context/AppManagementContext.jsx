@@ -28,7 +28,8 @@ const AppManagementContextProvider = ({ children }) => {
   );
 
   const { state: etherState } = useEtherContext();
-  const { loadLicenseData } = useLicenseManagementContext();
+  const { loadLicenseData, dispatch: licenseDispatch } =
+    useLicenseManagementContext();
 
   const loadApplicationData = useCallback(async (contract, web3, accounts) => {
     dispatch({ type: "SET_IS_LOADING", payload: true });
@@ -103,6 +104,7 @@ const AppManagementContextProvider = ({ children }) => {
         if (index === -1) return;
 
         try {
+          licenseDispatch({ type: "SET_IS_PURCHASE_LOADING", payload: true });
           await ApplicationContractService.purchaseLicense(
             etherState.appManagerContract,
             state.allAppAddresses[index],
@@ -112,7 +114,14 @@ const AppManagementContextProvider = ({ children }) => {
           );
 
           await loadLicenseData(etherState.appManagerContract, web3, accounts);
+          licenseDispatch({ type: "SET_IS_PURCHASE_LOADING", payload: false });
+          licenseDispatch({
+            type: "SET_IS_PURCHASE_DIALOG_OPENED",
+            payload: true,
+          });
         } catch (e) {
+          licenseDispatch({ type: "SET_IS_PURCHASE_LOADING", payload: false });
+          licenseDispatch({ type: "SET_IS_PURCHASE_FAILED", payload: true });
           console.log(e);
         }
       }
@@ -121,6 +130,7 @@ const AppManagementContextProvider = ({ children }) => {
       etherState.accounts,
       etherState.appManagerContract,
       etherState.web3,
+      licenseDispatch,
       loadLicenseData,
       state.allAppAddresses,
       state.allApps,

@@ -10,17 +10,12 @@ import {
   useTheme,
 } from "@mui/material";
 import { useEtherContext } from "context";
-import dayjs from "dayjs";
-import LocalizedFormat from "dayjs/plugin/localizedFormat";
 import { useAppItem } from "hooks";
 import PropTypes from "prop-types";
 import { useCallback } from "react";
 import { appType } from "types";
-import { ETHER_SYMBOL } from "utils";
 
-dayjs.extend(LocalizedFormat);
-
-const AppItemDialog = ({ app, open, openChanged }) => {
+const AppItemDialog = ({ app, open, openChanged, onPurchaseButtonClicked }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
   const {
@@ -28,7 +23,11 @@ const AppItemDialog = ({ app, open, openChanged }) => {
   } = useEtherContext();
 
   const onClose = useCallback(() => openChanged?.call(false), [openChanged]);
-  const { isAppOwner } = useAppItem(app, accounts);
+  const { isAppOwner, formattedPrice, formattedDateCreated } = useAppItem(
+    app,
+    web3,
+    accounts
+  );
 
   return (
     <Dialog open={!!open} onClose={onClose} fullScreen={fullScreen}>
@@ -71,14 +70,12 @@ const AppItemDialog = ({ app, open, openChanged }) => {
 
               <Stack direction="row" spacing={1} alignItems="baseline">
                 <Typography fontWeight="bold">🪙 Price</Typography>
-                <Typography>
-                  {web3.utils.fromWei(app.price).toString()} {ETHER_SYMBOL}
-                </Typography>
+                <Typography>{formattedPrice}</Typography>
               </Stack>
 
               <Stack direction="row" spacing={1} alignItems="baseline">
                 <Typography fontWeight="bold">📅 Upload date</Typography>
-                <Typography>{dayjs(app.date).format("LLLL")}</Typography>
+                <Typography>{formattedDateCreated}</Typography>
               </Stack>
 
               <Stack direction="row" spacing={1} alignItems="baseline">
@@ -94,7 +91,11 @@ const AppItemDialog = ({ app, open, openChanged }) => {
                 OK
               </Button>
 
-              {!isAppOwner && <Button variant="solid">Buy license</Button>}
+              {!isAppOwner && (
+                <Button variant="solid" onClick={onPurchaseButtonClicked}>
+                  Buy license
+                </Button>
+              )}
             </DialogActions>
           </DialogContent>
         </>
@@ -107,6 +108,7 @@ AppItemDialog.propTypes = {
   app: appType,
   open: PropTypes.bool,
   openChanged: PropTypes.func,
+  onPurchaseButtonClicked: PropTypes.func,
 };
 
 export default AppItemDialog;

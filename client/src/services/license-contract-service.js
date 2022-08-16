@@ -1,4 +1,5 @@
 import { LicenseConverter } from "types";
+import License2 from "contracts/License2.json";
 
 async function loadLicenseDataFromAddress(
   contract,
@@ -6,7 +7,10 @@ async function loadLicenseDataFromAddress(
   account,
   licenseContractAddress
 ) {
-  const licenseContract = await licenseContractAddress.methods
+  const licenseContract = await new web3.eth.Contract(
+    License2.abi,
+    licenseContractAddress
+  ).methods
     .getLicense()
     .call({ from: account });
 

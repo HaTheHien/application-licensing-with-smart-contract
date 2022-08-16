@@ -2,6 +2,9 @@ export const initialLicenseManagementState = {
   licenseAddresses: [],
   isLoading: false,
   licenses: [],
+  isPurchaseProcessing: false,
+  isPurchaseFailed: false,
+  isPurchaseStatusDialogOpened: false,
 };
 
 export const licenseManagementReducer = (state, action) => {
@@ -16,6 +19,25 @@ export const licenseManagementReducer = (state, action) => {
       return {
         ...state,
         isLoading: !!action?.payload,
+      };
+    }
+    case "SET_IS_PURCHASE_LOADING": {
+      return {
+        ...state,
+        isPurchaseProcessing: !!action?.payload,
+      };
+    }
+    case "SET_IS_PURCHASE_FAILED": {
+      return {
+        ...state,
+        isPurchaseFailed: !!action?.payload,
+        isPurchaseStatusDialogOpened: true,
+      };
+    }
+    case "SET_IS_PURCHASE_DIALOG_OPENED": {
+      return {
+        ...state,
+        isPurchaseStatusDialogOpened: !!action?.payload,
       };
     }
     case "SET_ALL_LICENSES": {

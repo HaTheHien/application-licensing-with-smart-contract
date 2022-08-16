@@ -10,16 +10,19 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { useAppItem } from "hooks";
 import PropTypes from "prop-types";
 import { appType } from "types";
-import { ETHER_SYMBOL } from "utils";
 
 dayjs.extend(relativeTime);
 
-const AppItem = ({ app, onClick, ...others }) => {
+const AppItem = ({ app, onClick, onPurchaseButtonClicked, ...others }) => {
   const {
     state: { web3, accounts },
   } = useEtherContext();
 
-  const { isDownloadable, isAppOwner } = useAppItem(app, accounts);
+  const { isDownloadable, isAppOwner, formattedPrice } = useAppItem(
+    app,
+    web3,
+    accounts
+  );
 
   return (
     <Card
@@ -53,7 +56,7 @@ const AppItem = ({ app, onClick, ...others }) => {
 
       <Stack direction="row">
         <Typography fontSize="lg" fontWeight="lg">
-          🪙 {web3.utils.fromWei(app.price).toString()} {ETHER_SYMBOL}
+          🪙 {formattedPrice}
         </Typography>
       </Stack>
 
@@ -111,8 +114,9 @@ const AppItem = ({ app, onClick, ...others }) => {
         <IconButton variant="soft" size="sm" disabled={!isDownloadable}>
           <DownloadIcon />
         </IconButton>
+
         {!isAppOwner && (
-          <Button variant="solid" size="sm">
+          <Button variant="solid" size="sm" onClick={onPurchaseButtonClicked}>
             Buy license
           </Button>
         )}
@@ -142,6 +146,7 @@ const AppItem = ({ app, onClick, ...others }) => {
 AppItem.propTypes = {
   app: appType,
   onClick: PropTypes.func,
+  onPurchaseButtonClicked: PropTypes.func,
 };
 
 export default AppItem;
