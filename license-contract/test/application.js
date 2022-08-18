@@ -45,7 +45,7 @@ contract("Application2", (accounts) => {
 
     const appContract = await Application2.at(appAddress[0]);
 
-    const result = await appContract.send(web3.utils.toWei("0.5", "ether"), {
+    await appContract.send(web3.utils.toWei("0.5", "ether"), {
       from: accounts[1],
     });
     // console.log(result);
@@ -79,8 +79,8 @@ contract("Application2", (accounts) => {
       accounts[1]
     );
 
-    console.log(licenseListOfAccount0);
-    console.log(licenseListOfAccount1);
+    // console.log(licenseListOfAccount0);
+    // console.log(licenseListOfAccount1);
 
     assert.equal(
       licenseListOfAccount0.length,
@@ -114,8 +114,8 @@ contract("Application2", (accounts) => {
       assert.fail("The transaction should have thrown an error");
     } catch (e) {
       assert.include(
-        e.message,
-        "Revert",
+        e.message.toLowerCase(),
+        "revert",
         "The error message should contain 'revert'"
       );
     }

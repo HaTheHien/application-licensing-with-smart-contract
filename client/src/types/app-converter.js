@@ -11,6 +11,17 @@ function fromContract(app, web3) {
   };
 }
 
+function toContract(data, web3) {
+  return [
+    web3.utils.toBN(web3.utils.soliditySha3(data.packageName)), // id
+    web3.utils.toWei(data.price, "ether"), // price
+    "", // content hash
+    data.name,
+    web3.utils.toBN(data.dateCreated),
+  ];
+}
+
 export const ApplicationConverter = {
   fromContract,
+  toContract,
 };

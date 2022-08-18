@@ -2,7 +2,7 @@ import InstallMetamaskBanner from "components/blockchain/Info/InstallMetamaskBan
 import ConnectToMetamaskIndicator from "components/blockchain/ProgressIndicatior/ConnectToMetamaskIndicator";
 import MainLayout from "components/common/Layout/MainLayout";
 import { useEtherContext } from "context";
-import Home from "pages/home/Home";
+import Home from "pages/Home";
 import { useEffect } from "react";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { ROUTER } from "routes/router";

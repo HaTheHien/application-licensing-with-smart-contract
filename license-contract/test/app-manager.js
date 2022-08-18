@@ -20,20 +20,8 @@ contract("ApplicationManager", (accounts) => {
   it("...should create new app", async () => {
     const appManagerInstance = await ApplicationManager.new();
 
-    const id = web3.utils.toBN(
-      web3.utils.soliditySha3("com.example.application")
-    );
-    const price = web3.utils.toWei("0.5", "ether");
-    const contentHash = "";
-    const name = "Gallery one";
-    const timestamp = web3.utils.toBN("1660299317772");
-
     const receipt = await appManagerInstance.createApplication(
-      id,
-      price,
-      contentHash,
-      name,
-      timestamp,
+      ...Object.values(app1),
       { from: accounts[0] }
     );
     console.log(receipt);
@@ -42,16 +30,16 @@ contract("ApplicationManager", (accounts) => {
       from: accounts[0],
     });
 
-    const app = await appManagerInstance.getApplication(id);
+    const app = await appManagerInstance.getApplication(app1.id);
     console.log(app);
 
     // console.log(price);
     assert.equal(n.toNumber(), 1, "Application did not create");
-    assert.equal(app.id.eq(id), true, "Wrong APP ID");
-    assert.equal(app.price.eq(web3.utils.toBN(price)), true, "Wrong price");
-    assert.equal(app.contentHash, contentHash, "Wrong content hash");
-    assert.equal(app.name, name, "Wrong name");
-    assert.equal(app.dateCreated.eq(timestamp), true, "Wrong timestamp");
+    assert.equal(app.id.eq(app1.id), true, "Wrong APP ID");
+    assert.equal(app.price.eq(web3.utils.toBN(app1.price)), true, "Wrong price");
+    assert.equal(app.contentHash, app1.contentHash, "Wrong content hash");
+    assert.equal(app.name, app1.name, "Wrong name");
+    assert.equal(app.dateCreated.eq(app1.timestamp), true, "Wrong timestamp");
   });
 
   it("...should get created applications", async () => {
@@ -144,13 +132,21 @@ contract("ApplicationManager", (accounts) => {
     });
 
     const applications2 = await appManagerInstance.getAllApplications();
-    assert.equal(applications2.length, 1, "Application list's length should be 1");
+    assert.equal(
+      applications2.length,
+      1,
+      "Application list's length should be 1"
+    );
 
     await appManagerInstance.createApplication(...Object.values(app2), {
       from: accounts[1],
     });
 
     const applications3 = await appManagerInstance.getAllApplications();
-    assert.equal(applications3.length, 2, "Application list's length should be 2");
+    assert.equal(
+      applications3.length,
+      2,
+      "Application list's length should be 2"
+    );
   });
 });

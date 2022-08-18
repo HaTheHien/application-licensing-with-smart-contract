@@ -1,5 +1,5 @@
 import { useEtherContext } from "context/EtherContext";
-import ApplicationManager from "contracts/ApplicationManager.json";
+import { useLicenseManagementContext } from "context/LicenseManagementContext";
 import PropTypes from "prop-types";
 import {
   createContext,
@@ -9,8 +9,8 @@ import {
   useMemo,
   useReducer,
 } from "react";
+import { ApplicationContractService } from "services";
 import { appManagementReducer, initialAppManagementState } from "stores";
-import { ApplicationConverter } from "types";
 
 const AppManagementContext = createContext({
   state: initialAppManagementState,
@@ -28,72 +28,36 @@ const AppManagementContextProvider = ({ children }) => {
   );
 
   const { state: etherState } = useEtherContext();
+  const { loadLicenseData, dispatch: licenseDispatch } =
+    useLicenseManagementContext();
 
   const loadApplicationData = useCallback(async (contract, web3, accounts) => {
-    if (web3) {
-      try {
-        if (accounts.length !== 0) {
-          const addresses = await contract.methods
-            .getCreatedApplications(accounts[0])
-            .call({ from: accounts[0] });
-
-          // console.log("Application addresses", addresses);
-          dispatch({ type: "SET_ALL_APPS_ADDRESSES", payload: addresses });
-
-          // console.log(addresses);
-          const apps = [];
-          for (const address of addresses) {
-            const contractApp = await contract.methods
-              .getApplicationFromAddress(address)
-              .call({ from: accounts[0] });
-            console.log(contractApp);
-            apps.push(ApplicationConverter.fromContract(contractApp, web3));
-          }
-
-          // console.log(apps);
-
-          dispatch({ type: "SET_ALL_APPS", payload: apps });
-        }
-      } catch (e) {
-        console.log(e);
-      }
-    }
+    dispatch({ type: "SET_IS_LOADING", payload: true });
+    const data = await ApplicationContractService.loadApplicationData(
+      contract,
+      web3,
+      accounts
+    );
+    console.log(data);
+    dispatch({ type: "SET_APP_DATA_FROM_CONTRACT", payload: data });
+    dispatch({ type: "SET_IS_LOADING", payload: false });
   }, []);
 
-  const loadContract = useCallback(
-    async (web3, accounts) => {
-      if (web3) {
-        const networkId = await web3.eth.net.getId();
-        const networks = Object.values(ApplicationManager.networks);
-        const deployedNetwork = networks[networkId ?? 0] || networks[0];
-        // console.log(deployedNetwork.address);
-
-        try {
-          const contract = new web3.eth.Contract(
-            ApplicationManager.abi,
-            deployedNetwork && deployedNetwork.address
-          );
-          if (contract) {
-            dispatch({ type: "SET_APP_MANAGER_CONTRACT", payload: contract });
-            await loadApplicationData(contract, web3, accounts);
-          }
-        } catch (e) {
-          console.log(e);
-        }
-      }
+  const loadPublishedApplicationData = useCallback(
+    async (contract, web3, accounts) => {
+      dispatch({ type: "SET_IS_LOADING", payload: true });
+      const data =
+        await ApplicationContractService.loadPublishedApplicationData(
+          contract,
+          web3,
+          accounts
+        );
+      console.log(data);
+      dispatch({ type: "SET_APP_DATA_FROM_CONTRACT", payload: data });
+      dispatch({ type: "SET_IS_LOADING", payload: false });
     },
-    [loadApplicationData]
+    []
   );
-
-  useEffect(() => {
-    (async () => {
-      const web3 = etherState.web3;
-      // console.log("has web3?", web3);
-      const accounts = etherState.accounts ?? [];
-
-      await loadContract(web3, accounts);
-    })();
-  }, [etherState?.accounts, etherState?.web3, loadContract]);
 
   const createNewApp = useCallback(
     async (data) => {
@@ -101,36 +65,103 @@ const AppManagementContextProvider = ({ children }) => {
       const accounts = etherState.accounts ?? [];
       // console.log("accounts?", accounts);
 
-      if (web3 && state.appManagerContract && accounts.length !== 0) {
-        const response = await state.appManagerContract.methods
-          .createApplication(
-            data.id,
-            data.formattedPrice,
-            "",
-            data.name,
-            web3.utils.toBN(data.dateCreated)
-          )
-          .send({ from: accounts[0] });
+      if (web3 && etherState.appManagerContract && accounts.length !== 0) {
+        await ApplicationContractService.createNewApp(
+          etherState.appManagerContract,
+          data,
+          accounts,
+          web3
+        );
 
-        console.log(response);
-        await loadApplicationData(state.appManagerContract, web3, accounts);
+        // console.log(response);
+        await loadPublishedApplicationData(
+          etherState.appManagerContract,
+          web3,
+          accounts
+        );
       }
     },
     [
-      etherState?.accounts,
-      etherState?.web3,
-      loadApplicationData,
-      state.appManagerContract,
+      etherState.web3,
+      etherState.accounts,
+      etherState.appManagerContract,
+      loadPublishedApplicationData,
     ]
   );
+
+  const purchaseLicense = useCallback(
+    async (app) => {
+      const web3 = etherState.web3;
+      const accounts = etherState.accounts ?? [];
+      if (
+        web3 &&
+        etherState.appManagerContract &&
+        accounts.length !== 0 &&
+        app
+      ) {
+        if (app.owner === accounts[0]) return;
+        const index = state.allApps.findIndex((a) => a.id === app.id);
+        if (index === -1) return;
+
+        try {
+          licenseDispatch({ type: "SET_IS_PURCHASE_LOADING", payload: true });
+          await ApplicationContractService.purchaseLicense(
+            etherState.appManagerContract,
+            state.allAppAddresses[index],
+            app.price,
+            accounts,
+            web3
+          );
+
+          await loadLicenseData(etherState.appManagerContract, web3, accounts);
+          licenseDispatch({ type: "SET_IS_PURCHASE_LOADING", payload: false });
+          licenseDispatch({
+            type: "SET_IS_PURCHASE_DIALOG_OPENED",
+            payload: true,
+          });
+        } catch (e) {
+          licenseDispatch({ type: "SET_IS_PURCHASE_LOADING", payload: false });
+          licenseDispatch({ type: "SET_IS_PURCHASE_FAILED", payload: true });
+          console.log(e);
+        }
+      }
+    },
+    [
+      etherState.accounts,
+      etherState.appManagerContract,
+      etherState.web3,
+      licenseDispatch,
+      loadLicenseData,
+      state.allAppAddresses,
+      state.allApps,
+    ]
+  );
+
+  useEffect(() => {
+    (async () => {
+      const contract = etherState.appManagerContract;
+
+      const web3 = etherState.web3;
+      // console.log("has web3?", web3);
+      const accounts = etherState.accounts ?? [];
+
+      await loadApplicationData(contract, web3, accounts);
+    })();
+  }, [
+    etherState.accounts,
+    etherState.web3,
+    etherState.appManagerContract,
+    loadApplicationData,
+  ]);
 
   const contextValue = useMemo(() => {
     return {
       state,
       dispatch,
       createNewApp,
+      purchaseLicense,
     };
-  }, [createNewApp, state]);
+  }, [createNewApp, purchaseLicense, state]);
 
   return (
     <AppManagementContext.Provider value={contextValue}>

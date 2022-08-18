@@ -1,3 +1,4 @@
+import ApplicationManager from "contracts/ApplicationManager.json";
 import PropTypes from "prop-types";
 import {
   createContext,
@@ -21,6 +22,19 @@ export const useEtherContext = () => {
 
 export const EtherContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(etherReducer, initialEtherState);
+
+  const onAccountChanged = useCallback(
+    async (web3) => {
+      // console.log("web3???", web3);
+      console.log("onAccountChanged");
+      const web3Instance = web3 ?? state?.web3;
+
+      const changedAccounts = await web3Instance?.eth.getAccounts();
+      dispatch({ type: "SET_ACCOUNTS", payload: changedAccounts });
+      console.log(`New accounts ${changedAccounts}`);
+    },
+    [state.web3]
+  );
 
   useEffect(() => {
     (async () => {
@@ -47,18 +61,34 @@ export const EtherContextProvider = ({ children }) => {
     })();
   }, []);
 
-  const onAccountChanged = useCallback(
-    async (web3) => {
-      // console.log("web3???", web3);
-      console.log("onAccountChanged");
-      const web3Instance = web3 ?? state?.web3;
+  const loadContract = useCallback(async (web3) => {
+    if (web3) {
+      const networkId = await web3.eth.net.getId();
+      const networks = Object.values(ApplicationManager.networks);
+      const deployedNetwork = networks[networkId ?? 0] || networks[0];
+      // console.log(deployedNetwork.address);
 
-      const changedAccounts = await web3Instance?.eth.getAccounts();
-      dispatch({ type: "SET_ACCOUNTS", payload: changedAccounts });
-      console.log(`New accounts ${changedAccounts}`);
-    },
-    [state.web3]
-  );
+      try {
+        const contract = new web3.eth.Contract(
+          ApplicationManager.abi,
+          deployedNetwork && deployedNetwork.address
+        );
+        if (contract) {
+          dispatch({ type: "SET_APP_MANAGER_CONTRACT", payload: contract });
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      if (state.web3) {
+        await loadContract(state.web3);
+      }
+    })();
+  }, [loadContract, state.web3]);
 
   useEffect(() => {
     if (window.ethereum) {
