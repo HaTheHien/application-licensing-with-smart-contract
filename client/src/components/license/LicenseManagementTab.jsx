@@ -1,13 +1,17 @@
 import { Typography } from "@mui/joy";
 import { Grid, Stack } from "@mui/material";
 import AppLoadingProgressIndicator from "components/app/AppLoadingProgressIndicator";
+import LicenseDialog from "components/license/LicenseDialog";
 import LicenseItem from "components/license/LicenseItem";
 import { useLicenseManagementContext } from "context/LicenseManagementContext";
+import { useCallback, useState } from "react";
 
 const LicenseManagementTab = () => {
   const {
     state: { isLoading, licenses },
   } = useLicenseManagementContext();
+
+  const [selectedLicense, setSelectedLicense] = useState(null);
 
   return (
     <>
@@ -23,7 +27,12 @@ const LicenseManagementTab = () => {
             <Grid container py={2}>
               {licenses.map((license, idx) => (
                 <Grid item xs={4} key={idx} px={0.5} py={0.5}>
-                  <LicenseItem license={license} />
+                  <LicenseItem
+                    license={license}
+                    onClick={() => {
+                      setSelectedLicense(license);
+                    }}
+                  />
                 </Grid>
               ))}
             </Grid>
@@ -44,6 +53,13 @@ const LicenseManagementTab = () => {
           </>
         )}
       </Stack>
+
+      <LicenseDialog
+        license={selectedLicense}
+        onClose={useCallback(() => {
+          setSelectedLicense(null);
+        }, [])}
+      />
     </>
   );
 };

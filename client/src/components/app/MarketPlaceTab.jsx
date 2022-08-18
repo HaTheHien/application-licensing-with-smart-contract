@@ -63,7 +63,7 @@ const MarketPlaceTab = () => {
               >
                 <Typography level="h1">📦</Typography>
                 <Typography level="h4">
-                  There is no any apps on the marketplace yat
+                  There is no any apps on the marketplace yet
                 </Typography>
               </Stack>
             )}

@@ -119,7 +119,7 @@ const AppItem = ({ app, onClick, onPurchaseButtonClicked, ...others }) => {
             <Typography color="success">Purchased</Typography>
           </Stack>
         )}
-        {isAppOwner && <Typography>My app</Typography>}
+        {isAppOwner && <Typography>👤 My app</Typography>}
 
         <IconButton variant="soft" size="sm" disabled={!isDownloadable}>
           <DownloadIcon />

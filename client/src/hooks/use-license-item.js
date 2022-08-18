@@ -12,20 +12,25 @@ export function useLicenseItem(license, allApps) {
     return dayjs((license?.dateExpired ?? 0) * 1000).isAfter(dayjs());
   }, [license?.dateExpired]);
 
-  const appName = useMemo(() => {
-    return allApps?.find((app) => app.id === license?.appId)?.name ?? "Unknown";
+  const app = useMemo(() => {
+    return allApps?.find((app) => app.id === license?.appId);
   }, [allApps, license?.appId]);
+
+  const appName = useMemo(() => {
+    return app?.name ?? "Unknown";
+  }, [app?.name]);
 
   const validUntil = useMemo(() => {
     return dayjs((license?.dateExpired ?? 0) * 1000).fromNow();
   }, [license?.dateExpired]);
 
   const formatExpiredDate = useMemo(() => {
-    return dayjs((license?.dateExpired ?? 0) * 1000).format("LL");
+    return dayjs((license?.dateExpired ?? 0) * 1000).format("LLL");
   }, [license?.dateExpired]);
 
   return {
     isEligible,
+    app,
     appName,
     validUntil,
     formatExpiredDate,

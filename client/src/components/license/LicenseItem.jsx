@@ -43,14 +43,12 @@ const LicenseItem = ({ license, onClick, ...others }) => {
         boxShadow: "xs",
       }}
     >
-      <Stack direction="row" spacing={1} my={1}>
-        <Stack direction="column" spacing={0.5} alignItems="baseline" width={1}>
-          <Typography level="h2" fontSize="x-large" fontWeight="bold">
-            📜 License
-          </Typography>
+      <Stack direction="column" spacing={0.5} alignItems="baseline" width={1}>
+        <Typography level="h2" fontSize="x-large" fontWeight="bold">
+          📜 {appName}
+        </Typography>
 
-          <Divider flexItem />
-        </Stack>
+        <Divider flexItem />
       </Stack>
 
       <Stack direction="row" alignItems="baseline" spacing={0.5} width={1}>
@@ -73,19 +71,6 @@ const LicenseItem = ({ license, onClick, ...others }) => {
             {license.appId}
           </Typography>
         </Sheet>
-      </Stack>
-
-      <Stack direction="row" alignItems="baseline" spacing={0.5} width={1}>
-        <Typography>App</Typography>
-
-        <Typography
-          fontFamily="monospace"
-          noWrap
-          overflow="hidden"
-          textOverflow="ellipsis"
-        >
-          {appName}
-        </Typography>
       </Stack>
 
       {isEligible && (
