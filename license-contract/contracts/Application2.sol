@@ -57,6 +57,17 @@ contract Application2 is Ownable {
     _;
   }
 
+  modifier fromLicenseOwner(address owner, License2 license) {
+    require(ownerLicense[owner] == license, "Invalid license owner");
+
+    _;
+  }
+
+  modifier licenseExists(address owner) {
+    require(address(ownerLicense[owner]) != address(0), "License not found");
+    _;
+  }
+
   function _isLicenseValid(uint256 _licenseId) internal view returns (bool) {
     return licenses[_licenseId] != License2(address(0));
   }
@@ -69,7 +80,8 @@ contract Application2 is Ownable {
       id,
       block.timestamp,
       LICENSE_LIFE_TIME + block.timestamp,
-      _licenseOwner
+      _licenseOwner,
+      payable(address(this))
     );
 
     uint256 licenseId = licenses.length;
@@ -166,6 +178,16 @@ contract Application2 is Ownable {
     returns (License2)
   {
     return ownerLicense[_ownerAddress];
+  }
+
+  function onLicenseOwnerChanged(address oldOwner, address newOwner)
+    public
+    payable
+    licenseExists(oldOwner)
+    fromLicenseOwner(oldOwner, License2(msg.sender))
+  {
+    delete ownerLicense[payable(address(oldOwner))];
+    ownerLicense[newOwner] = License2(msg.sender);
   }
 
   receive() external payable priceOk(msg.value) {

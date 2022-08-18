@@ -79,8 +79,8 @@ contract("Application2", (accounts) => {
       accounts[1]
     );
 
-    console.log(licenseListOfAccount0);
-    console.log(licenseListOfAccount1);
+    // console.log(licenseListOfAccount0);
+    // console.log(licenseListOfAccount1);
 
     assert.equal(
       licenseListOfAccount0.length,
