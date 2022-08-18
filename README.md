@@ -15,8 +15,9 @@ Thông tin nhóm:
       
 #### How to run client
       1. Go to client: cd ./client
-      2. Install packages: npm install
-      3. Run app: npm start
+      2. Install packages: yarn install
+      3. Run app: yarn start
+      
       
    
       
