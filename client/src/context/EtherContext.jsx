@@ -32,6 +32,7 @@ export const EtherContextProvider = ({ children }) => {
       const changedAccounts = await web3Instance?.eth.getAccounts();
       dispatch({ type: "SET_ACCOUNTS", payload: changedAccounts });
       console.log(`New accounts ${changedAccounts}`);
+      dispatch({ type: "SET_METAMASK_ENABLED", payload: true });
     },
     [state.web3]
   );
@@ -91,14 +92,17 @@ export const EtherContextProvider = ({ children }) => {
   }, [loadContract, state.web3]);
 
   useEffect(() => {
+    const cb = async () => {
+      await onAccountChanged(state.web3);
+    };
     if (window.ethereum) {
-      window.ethereum?.on("accountsChanged", onAccountChanged);
+      window.ethereum?.on("accountsChanged", cb);
     }
     return () => {
       console.log("remove previous listener");
-      window.ethereum?.removeListener("accountsChanged", onAccountChanged);
+      window.ethereum?.removeListener("accountsChanged", cb);
     };
-  }, [onAccountChanged]);
+  }, [onAccountChanged, state.web3]);
 
   const contextValue = useMemo(
     () => ({

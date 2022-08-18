@@ -104,7 +104,10 @@ const AppManagementContextProvider = ({ children }) => {
         if (index === -1) return;
 
         try {
-          licenseDispatch({ type: "SET_IS_PURCHASE_LOADING", payload: true });
+          licenseDispatch({
+            type: "SET_IS_TRANSACTION_PROCESSING",
+            payload: true,
+          });
           await ApplicationContractService.purchaseLicense(
             etherState.appManagerContract,
             state.allAppAddresses[index],
@@ -114,14 +117,20 @@ const AppManagementContextProvider = ({ children }) => {
           );
 
           await loadLicenseData(etherState.appManagerContract, web3, accounts);
-          licenseDispatch({ type: "SET_IS_PURCHASE_LOADING", payload: false });
           licenseDispatch({
-            type: "SET_IS_PURCHASE_DIALOG_OPENED",
+            type: "SET_IS_TRANSACTION_PROCESSING",
+            payload: false,
+          });
+          licenseDispatch({
+            type: "SET_IS_TRANSACTION_STATUS_DIALOG_OPENED",
             payload: true,
           });
         } catch (e) {
-          licenseDispatch({ type: "SET_IS_PURCHASE_LOADING", payload: false });
-          licenseDispatch({ type: "SET_IS_PURCHASE_FAILED", payload: true });
+          licenseDispatch({
+            type: "SET_IS_TRANSACTION_PROCESSING",
+            payload: false,
+          });
+          licenseDispatch({ type: "SET_IS_TRANSACTION_FAILED", payload: true });
           console.log(e);
         }
       }

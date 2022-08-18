@@ -16,7 +16,7 @@ import { useAppItem, useLicenseItem } from "hooks";
 import PropTypes from "prop-types";
 import { licenseType } from "types";
 
-const LicenseDialog = ({ license, onClose, onTransferButtonClicked }) => {
+const LicenseDialog = ({ license, open, onClose, onTransferButtonClicked }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -40,7 +40,7 @@ const LicenseDialog = ({ license, onClose, onTransferButtonClicked }) => {
   );
 
   return (
-    <Dialog open={!!license} onClose={onClose} fullScreen={fullScreen}>
+    <Dialog open={!!open} onClose={onClose} fullScreen={fullScreen}>
       {license && (
         <>
           <DialogTitle sx={{ minWidth: 400 }} component={Sheet}>
@@ -132,7 +132,11 @@ const LicenseDialog = ({ license, onClose, onTransferButtonClicked }) => {
             sx={{ flexDirection: "column", alignItems: "end", rowGap: 0.5 }}
           >
             <Divider flexItem />
-            <Button onClick={onClose} color="danger" variant="plain">
+            <Button
+              onClick={onTransferButtonClicked}
+              color="danger"
+              variant="plain"
+            >
               Transfer
             </Button>
             <Button onClick={onClose} autoFocus variant="plain">
@@ -146,6 +150,7 @@ const LicenseDialog = ({ license, onClose, onTransferButtonClicked }) => {
 };
 
 LicenseDialog.propTypes = {
+  open: PropTypes.bool,
   license: licenseType,
   onClose: PropTypes.func,
   onTransferButtonClicked: PropTypes.func,

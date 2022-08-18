@@ -3,6 +3,7 @@ import { Grid, Stack } from "@mui/material";
 import AppLoadingProgressIndicator from "components/app/AppLoadingProgressIndicator";
 import LicenseDialog from "components/license/LicenseDialog";
 import LicenseItem from "components/license/LicenseItem";
+import TransferLicenseDialog from "components/license/TransferLicenseDialog";
 import { useLicenseManagementContext } from "context/LicenseManagementContext";
 import { useCallback, useState } from "react";
 
@@ -12,6 +13,8 @@ const LicenseManagementTab = () => {
   } = useLicenseManagementContext();
 
   const [selectedLicense, setSelectedLicense] = useState(null);
+  const [isLicenseDialogOpened, setIsLicenseDialogOpened] = useState(false);
+  const [isTransferDialogOpened, setIsTransferDialogOpened] = useState(false);
 
   return (
     <>
@@ -31,6 +34,7 @@ const LicenseManagementTab = () => {
                     license={license}
                     onClick={() => {
                       setSelectedLicense(license);
+                      setIsLicenseDialogOpened(true);
                     }}
                   />
                 </Grid>
@@ -56,9 +60,21 @@ const LicenseManagementTab = () => {
 
       <LicenseDialog
         license={selectedLicense}
+        open={isLicenseDialogOpened}
         onClose={useCallback(() => {
           setSelectedLicense(null);
+          setIsLicenseDialogOpened(false);
         }, [])}
+        onTransferButtonClicked={useCallback(() => {
+          setIsLicenseDialogOpened(false);
+          setIsTransferDialogOpened(true);
+        }, [])}
+      />
+
+      <TransferLicenseDialog
+        license={selectedLicense}
+        open={isTransferDialogOpened}
+        openChanged={setIsTransferDialogOpened}
       />
     </>
   );

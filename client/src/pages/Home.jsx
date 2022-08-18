@@ -21,15 +21,18 @@ const Home = () => {
 
   const {
     state: {
-      isPurchaseProcessing,
-      isPurchaseStatusDialogOpened,
-      isPurchaseFailed,
+      isTransactionProcessing,
+      isTransactionStatusDialogOpened,
+      isTransactionFailed,
     },
     dispatch: licenseDispatch,
   } = useLicenseManagementContext();
 
   const onStatusDialogClosed = useCallback(() => {
-    licenseDispatch({ type: "SET_IS_PURCHASE_DIALOG_OPENED", payload: false });
+    licenseDispatch({
+      type: "SET_IS_TRANSACTION_STATUS_DIALOG_OPENED",
+      payload: false,
+    });
   }, [licenseDispatch]);
 
   return (
@@ -76,7 +79,7 @@ const Home = () => {
         </Tabs>
       </Container>
 
-      <Dialog open={!!isPurchaseProcessing} onClose={null}>
+      <Dialog open={!!isTransactionProcessing} onClose={null}>
         <DialogTitle>Loading</DialogTitle>
         <DialogContent>
           <Stack width={1} direction="row" spacing={2} alignItems="center">
@@ -87,10 +90,10 @@ const Home = () => {
       </Dialog>
 
       <Dialog
-        open={isPurchaseStatusDialogOpened && !isPurchaseFailed}
+        open={isTransactionStatusDialogOpened && !isTransactionFailed}
         onClose={onStatusDialogClosed}
       >
-        <DialogTitle>Purchase successfully</DialogTitle>
+        <DialogTitle>The transaction is successfully completed</DialogTitle>
         <DialogContent>
           <Stack width={1} direction="column" spacing={2} alignItems="center">
             <CheckCircleIcon
@@ -109,7 +112,7 @@ const Home = () => {
       </Dialog>
 
       <Dialog
-        open={isPurchaseStatusDialogOpened && isPurchaseFailed}
+        open={isTransactionStatusDialogOpened && isTransactionFailed}
         onClose={onStatusDialogClosed}
       >
         <DialogTitle>Purchase failed</DialogTitle>
@@ -123,8 +126,8 @@ const Home = () => {
             />
 
             <Typography>
-              Something went wrong. Your payment was unable to process. Please
-              try again later.
+              Something went wrong. Your transaction was unable to process.
+              Please try again later.
             </Typography>
           </Stack>
         </DialogContent>

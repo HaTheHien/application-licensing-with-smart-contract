@@ -43,6 +43,47 @@ const LicenseManagementContextProvider = ({ children }) => {
     dispatch({ type: "SET_IS_LOADING", payload: false });
   }, []);
 
+  const transferLicense = useCallback(
+    async (licenseAddress, newOwnerAddress) => {
+      const web3 = etherState.web3;
+      // console.log("has web3?", web3);
+      const accounts = etherState.accounts ?? [];
+
+      if (web3 && licenseAddress && newOwnerAddress) {
+        dispatch({ type: "SET_IS_TRANSACTION_PROCESSING", payload: true });
+        const result = await LicenseContractService.transferLicense(
+          licenseAddress,
+          newOwnerAddress,
+          web3,
+          accounts
+        );
+        dispatch({ type: "SET_IS_TRANSACTION_PROCESSING", payload: false });
+
+        if (!result) {
+          dispatch({ type: "SET_IS_TRANSACTION_FAILED", payload: true });
+        } else {
+          const contract = etherState.appManagerContract;
+          await loadLicenseData(contract, web3, accounts);
+        }
+
+        dispatch({
+          type: "SET_IS_TRANSACTION_STATUS_DIALOG_OPENED",
+          payload: true,
+        });
+      } else {
+        console.log(
+          `Something is null: web3 ? ${!web3}, licenseAddress? ${!licenseAddress}, newOwnerAddress? ${newOwnerAddress}`
+        );
+      }
+    },
+    [
+      etherState.accounts,
+      etherState.appManagerContract,
+      etherState.web3,
+      loadLicenseData,
+    ]
+  );
+
   useEffect(() => {
     (async () => {
       const contract = etherState.appManagerContract;
@@ -65,8 +106,9 @@ const LicenseManagementContextProvider = ({ children }) => {
       state,
       dispatch,
       loadLicenseData,
+      transferLicense,
     };
-  }, [loadLicenseData, state]);
+  }, [loadLicenseData, state, transferLicense]);
 
   return (
     <LicenseManagementContext.Provider value={contextValue}>

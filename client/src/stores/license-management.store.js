@@ -2,9 +2,9 @@ export const initialLicenseManagementState = {
   licenseAddresses: [],
   isLoading: false,
   licenses: [],
-  isPurchaseProcessing: false,
-  isPurchaseFailed: false,
-  isPurchaseStatusDialogOpened: false,
+  isTransactionProcessing: false,
+  isTransactionFailed: false,
+  isTransactionStatusDialogOpened: false,
 };
 
 export const licenseManagementReducer = (state, action) => {
@@ -21,23 +21,23 @@ export const licenseManagementReducer = (state, action) => {
         isLoading: !!action?.payload,
       };
     }
-    case "SET_IS_PURCHASE_LOADING": {
+    case "SET_IS_TRANSACTION_PROCESSING": {
       return {
         ...state,
-        isPurchaseProcessing: !!action?.payload,
+        isTransactionProcessing: !!action?.payload,
       };
     }
-    case "SET_IS_PURCHASE_FAILED": {
+    case "SET_IS_TRANSACTION_FAILED": {
       return {
         ...state,
-        isPurchaseFailed: !!action?.payload,
-        isPurchaseStatusDialogOpened: true,
+        isTransactionFailed: !!action?.payload,
+        isTransactionStatusDialogOpened: true,
       };
     }
-    case "SET_IS_PURCHASE_DIALOG_OPENED": {
+    case "SET_IS_TRANSACTION_STATUS_DIALOG_OPENED": {
       return {
         ...state,
-        isPurchaseStatusDialogOpened: !!action?.payload,
+        isTransactionStatusDialogOpened: !!action?.payload,
       };
     }
     case "SET_ALL_LICENSES": {

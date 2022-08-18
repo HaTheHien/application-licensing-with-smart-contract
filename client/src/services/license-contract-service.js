@@ -1,5 +1,5 @@
+import { License2 } from "contracts";
 import { LicenseConverter } from "types";
-import License2 from "contracts/License2.json";
 
 async function loadLicenseDataFromAddress(
   contract,
@@ -37,11 +37,40 @@ async function loadLicenseData(contract, web3, accounts) {
       licenses,
     };
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
   return {};
 }
 
+export async function transferLicense(
+  licenseAddress,
+  newOwnerAddress,
+  web3,
+  accounts
+) {
+  if (
+    !licenseAddress ||
+    !newOwnerAddress ||
+    !web3 ||
+    (accounts ?? []).length === 0
+  ) {
+    return false;
+  }
+
+  try {
+    const licenseContract = new web3.eth.Contract(License2.abi, licenseAddress);
+
+    await licenseContract.methods
+      .transferLicense(newOwnerAddress)
+      .send({ from: accounts[0] });
+    return true;
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
+}
+
 export const LicenseContractService = {
   loadLicenseData,
+  transferLicense,
 };
