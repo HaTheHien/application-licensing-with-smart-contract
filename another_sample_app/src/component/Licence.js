@@ -5,7 +5,9 @@ export default function Licence(){
     const [accounts,setAccounts]=useState();
     useEffect(()=>{
         const load = async () =>{
-            const web3=new Web3(Web3.givenProvider || "http://localhost:8575");
+            const web3=new Web3(Web3.givenProvider || "http://localhost:7545"
+                //"http://localhost:8575"
+            );
             const accounts=await web3.eth.requestAccounts();
             console.log(web3);
             setAccounts(accounts[0]);

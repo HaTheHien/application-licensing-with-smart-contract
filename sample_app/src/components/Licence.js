@@ -1,37 +1,28 @@
 import React, { useCallback, useEffect, useState } from "react";
-import Web3 from "web3/dist/web3.min.js";
+import Application2 from "../contracts/Application2.json"
+import getWeb3 from "../utils/getWeb3";
+
+
+const APP_CONTRACT_ADDRESS = "0x1560Bba3F4b32db444ED247D85D32938dA890244";
 
 export default function Licence(){
-    const [accounts,setAccounts]=useState();
+    const [haveLicense,setHaveLicense]=useState();
     useEffect(()=>{
         const load = async () =>{
-            const web3=new Web3(Web3.givenProvider || "http://localhost:8575");
-            const accounts=await web3.eth.requestAccounts();
-            console.log(web3);
-            setAccounts(accounts[0]);
+            const web3= await getWeb3()
+            const accounts = await web3?.eth.getAccounts();
+            const appContract = await new web3.eth.Contract(Application2.abi, APP_CONTRACT_ADDRESS);
+            var check = await appContract.methods.checkLicense(accounts[0]).call({from: accounts[0]})
+            setHaveLicense(check);
         }
         load();
-    },[]);
-
-    const handleLoadLicence = useCallback(async ()=>{
-        if (!window.ethereum)
-            alert("PLEASE ACTIVATE METAMASK");
-        else{
-            const accs=await window.ethereum.request({
-                method:"eth_requestAccounts"
-            });
-            console.log(accs[0]);
-        }
     },[]);
 
     return (
         <div className="licence">
             <div className="licence-notif">
-                {accounts? accounts : <div>You don't have any licences.</div>}
-                
-
+                {haveLicense?  <div>Have license</div> : <div>You don't have license.</div>}
             </div>
-            <button onClick={handleLoadLicence}>Load Licence</button>
         </div>
     )
 }

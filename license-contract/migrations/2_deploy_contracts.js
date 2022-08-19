@@ -32,4 +32,16 @@ async function deployApplication(accounts, appManagerInstance) {
   await appManagerInstance.createApplication(...Object.values(app2), {
     from: accounts[1],
   });
+
+  
+  const apps1 = await appManagerInstance.getCreatedApplications(accounts[0], {
+    from: accounts[0],
+  });
+  console.log(apps1);
+
+  const apps2 = await appManagerInstance.getCreatedApplications(accounts[1], {
+    from: accounts[1],
+  });
+  console.log(apps2);
+  
 }
