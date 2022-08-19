@@ -86,19 +86,19 @@ const AppItemDialog = ({ app, open, openChanged, onPurchaseButtonClicked }) => {
                 </Typography>
               </Stack>
             </Stack>
-
-            <DialogActions>
-              <Button onClick={onClose} autoFocus variant="soft">
-                OK
-              </Button>
-
-              {!isAppOwner && !isLicenseOwner && (
-                <Button variant="solid" onClick={onPurchaseButtonClicked}>
-                  Buy license
-                </Button>
-              )}
-            </DialogActions>
           </DialogContent>
+
+          <DialogActions>
+            <Button onClick={onClose} autoFocus variant="soft">
+              OK
+            </Button>
+
+            {!isAppOwner && !isLicenseOwner && (
+              <Button variant="solid" onClick={onPurchaseButtonClicked}>
+                Buy license
+              </Button>
+            )}
+          </DialogActions>
         </>
       )}
     </Dialog>

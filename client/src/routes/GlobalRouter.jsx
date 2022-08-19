@@ -18,14 +18,14 @@ const ScrollToTop = () => {
 
 const GlobalRouter = () => {
   const {
-    state: { metaMaskEnabled },
+    state: { metaMaskEnabled, accounts },
   } = useEtherContext();
 
   if (!window.ethereum) {
     return <InstallMetamaskBanner />;
   }
 
-  if (!metaMaskEnabled) {
+  if (!metaMaskEnabled || !accounts) {
     return <ConnectToMetamaskIndicator />;
   }
 

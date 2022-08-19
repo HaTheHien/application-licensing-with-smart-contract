@@ -41,8 +41,8 @@ contract License2 is Ownable {
   }
 
   function checkOwner(address _owner) public view returns (bool) {
-    return 
-    _owner == owner() && (dateExpired >= block.timestamp || dateExpired == 0);
+    return
+      _owner == owner() && (dateExpired >= block.timestamp || dateExpired == 0);
   }
 
   function transferLicense(address newOwner) public payable onlyOwner {

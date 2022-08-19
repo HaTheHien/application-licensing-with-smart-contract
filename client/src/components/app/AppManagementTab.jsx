@@ -1,14 +1,18 @@
 import Add from "@mui/icons-material/Add";
 import { Box, Button, Link, Typography } from "@mui/joy";
 import { Stack } from "@mui/material";
+import { AppItemDialog } from "components/app";
+import AdminAppItem from "components/app/AdminAppItem";
 import AppLoadingProgressIndicator from "components/app/AppLoadingProgressIndicator";
 import CreateAppDialog from "components/app/CreateAppDialog";
-import { AppItem } from "components/app";
 import { useAppManagementContext } from "context";
 import { useCallback, useState } from "react";
 
 const AppManagementTab = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [appDialogOpen, setAppDialogOpen] = useState(false);
+  const [selectedApp, setSelectedApp] = useState(null);
+
   const {
     state: { allPublishedAppAddresses, allPublishedApps, isLoading },
   } = useAppManagementContext();
@@ -57,7 +61,13 @@ const AppManagementTab = () => {
 
             {allPublishedApps.map((app) => (
               <Box pt={1} key={app.id}>
-                <AppItem app={app} />
+                <AdminAppItem
+                  app={app}
+                  onClick={() => {
+                    setSelectedApp(app);
+                    setAppDialogOpen(true);
+                  }}
+                />
               </Box>
             ))}
           </>
@@ -65,6 +75,16 @@ const AppManagementTab = () => {
       </Stack>
 
       <CreateAppDialog openChanged={setDialogOpen} open={dialogOpen} />
+
+      <AppItemDialog
+        openChanged={setAppDialogOpen}
+        open={appDialogOpen}
+        app={selectedApp}
+        // onPurchaseButtonClicked={useCallback(() => {
+        //   setAppDialogOpen(false);
+        //   setPurchaseDialogOpen(true);
+        // }, [])}
+      />
     </>
   );
 };

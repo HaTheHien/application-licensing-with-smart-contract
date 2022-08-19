@@ -101,7 +101,14 @@ contract ApplicationManager {
     uint256 _licenseLifeTime
   ) public returns (uint256) {
     return
-      _createApplication(_appId, _price, _contentHash, _name, _dateCreated, _licenseLifeTime);
+      _createApplication(
+        _appId,
+        _price,
+        _contentHash,
+        _name,
+        _dateCreated,
+        _licenseLifeTime
+      );
   }
 
   function createApplication(
@@ -112,7 +119,14 @@ contract ApplicationManager {
     uint256 _dateCreated
   ) public returns (uint256) {
     return
-      _createApplication(_appId, _price, _contentHash, _name, _dateCreated, 365 days);
+      _createApplication(
+        _appId,
+        _price,
+        _contentHash,
+        _name,
+        _dateCreated,
+        365 days
+      );
   }
 
   function getPrice(uint256 _appId) public view returns (uint256) {

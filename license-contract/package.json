@@ -6,6 +6,12 @@
   "author": "Ha The Hien",
   "license": "MIT",
   "private": true,
+  "scripts": {
+    "truffle-compile": "truffle compile",
+    "truffle-deploy": "truffle deploy",
+    "truffle-migrate": "truffle migrate --reset",
+    "truffle-test": "truffle test --stacktrace-extra"
+  },
   "devDependencies": {
     "@openzeppelin/contracts": "^4.7.3",
     "ethlint": "^1.2.5",

@@ -121,7 +121,7 @@ contract("Application2", (accounts) => {
     }
   });
 
-  it("...should edit app", async ()=>{
+  it("...should edit app", async () => {
     const appManagerInstance = await ApplicationManager.new();
 
     const receipt = await appManagerInstance.createApplication(
@@ -129,8 +129,8 @@ contract("Application2", (accounts) => {
       { from: accounts[0] }
     );
     console.log(receipt);
-  
-    const price =  web3.utils.toWei("1", "ether")
+
+    const price = web3.utils.toWei("1", "ether");
     const amount = web3.utils.toBN(365 * 24 * 60 * 60);
 
     console.log(accounts[0]);
@@ -144,36 +144,36 @@ contract("Application2", (accounts) => {
 
     const appContract = await Application2.at(appAddresses[0]);
 
-    await appContract.editApplication(price, "abc", amount, {from: accounts[0]});
+    await appContract.editApplication(price, "abc", amount, {
+      from: accounts[0],
+    });
 
     const app = await appManagerInstance.getApplication(app1.id);
     console.log(app);
     console.log(app.price.toString());
-
 
     // console.log(price);
     assert.equal(app.id.eq(app1.id), true, "Wrong APP ID");
     assert.equal(app.price.eq(web3.utils.toBN(price)), true, "Wrong price");
     assert.equal(app.contentHash, "abc", "Wrong content hash");
     assert.equal(app.name, app1.name, "Wrong name");
-    assert.equal(app.licenseLifeTime.eq(amount), true, "Wrong license lift time");
-  })
+    assert.equal(
+      app.licenseLifeTime.eq(amount),
+      true,
+      "Wrong license life time"
+    );
+  });
 
   it("...should check license owner", async () => {
     const appManagerInstance = await ApplicationManager.new();
-    await appManagerInstance.createApplication(
-      ...Object.values(app1),
-      { from: accounts[0] }
-    );
+    await appManagerInstance.createApplication(...Object.values(app1), {
+      from: accounts[0],
+    });
     // console.log(receipt);
 
-
-    const {appAddress} = await appManagerInstance.getApplication(
-      app1.id,
-      {
-        from: accounts[0],
-      }
-    );
+    const { appAddress } = await appManagerInstance.getApplication(app1.id, {
+      from: accounts[0],
+    });
 
     const appContract = await Application2.at(appAddress);
 
@@ -181,13 +181,19 @@ contract("Application2", (accounts) => {
       from: accounts[1],
     });
 
-    const check1 = await appContract.checkLicense(accounts[0], {from: accounts[0]});
-    const check2 = await appContract.checkLicense(accounts[1], {from: accounts[1]});
-    const check3 = await appContract.checkLicense(accounts[2], {from: accounts[1]});
+    const check1 = await appContract.checkLicense(accounts[0], {
+      from: accounts[0],
+    });
+    const check2 = await appContract.checkLicense(accounts[1], {
+      from: accounts[1],
+    });
+    const check3 = await appContract.checkLicense(accounts[2], {
+      from: accounts[1],
+    });
 
     // console.log(price);
     assert.equal(check1, true, "Wrong check with user with application owner");
     assert.equal(check2, true, "Wrong check with user have license");
     assert.equal(check3, false, "Wrong check with user not have license");
-  })
+  });
 });

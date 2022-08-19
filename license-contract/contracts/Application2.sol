@@ -18,7 +18,7 @@ contract Application2 is Ownable {
   event ApplicationEdited(
     address indexed owner,
     uint256 appId,
-    uint256 price, 
+    uint256 price,
     string contentHash,
     uint256 licenseLifeTime
   );
@@ -199,44 +199,35 @@ contract Application2 is Ownable {
     ownerLicense[newOwner] = License2(msg.sender);
   }
 
-  function editApplication(uint256 _price, string memory _contentHash, uint256 _licenseLifeTime) public onlyOwner {
+  function editApplication(
+    uint256 _price,
+    string memory _contentHash,
+    uint256 _licenseLifeTime
+  ) public onlyOwner {
     price = _price;
     contentHash = _contentHash;
     licenseLifeTime = _licenseLifeTime;
     version++;
 
-    emit ApplicationEdited(
-      owner(),
-      id,
-      price,
-      contentHash,
-      licenseLifeTime
-    );
+    emit ApplicationEdited(owner(), id, price, contentHash, licenseLifeTime);
   }
 
-  function checkLicense(address _address)
-    public
-    view
-    returns (bool)
-  {
-    if (owner() == _address)
-    {
+  function checkLicense(address _address) public view returns (bool) {
+    if (owner() == _address) {
       return true;
     }
     License2 license = ownerLicense[_address];
-    if (address(license) != address(0) && license.checkOwner(_address) == true)
-    {
+    if (
+      address(license) != address(0) && license.checkOwner(_address) == true
+    ) {
       return true;
-    }
-    else
-    {
+    } else {
       for (uint256 index = 0; index < licenses.length; index++) {
-        if (licenses[index].checkOwner(_address) == true)
-        {
+        if (licenses[index].checkOwner(_address) == true) {
           return true;
         }
       }
-     }
+    }
     return false;
   }
 
