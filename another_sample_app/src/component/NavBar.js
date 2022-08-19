@@ -6,18 +6,18 @@ export default function NavBar() {
         <Link to="/" className="site-title">
             TODO App
         </Link>
-        <ul>
+        {/* <ul>
             <CustomLink to="/todo">Main</CustomLink>
             <CustomLink to="/manage-licence">Manage Licence</CustomLink>
-        </ul>
+        </ul> */}
     </nav>
 }
 
-function CustomLink({to,children,...props}){
-    //const path=window.location.pathname;
-    return (
-        <li>
-            <Link to={to} {...props}>{children}</Link>
-        </li>
-    )
-}
+// function CustomLink({to,children,...props}){
+//     //const path=window.location.pathname;
+//     return (
+//         <li>
+//             <Link to={to} {...props}>{children}</Link>
+//         </li>
+//     )
+// }

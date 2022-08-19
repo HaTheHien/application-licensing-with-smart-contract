@@ -1,37 +1,56 @@
 import React, { useCallback, useEffect, useState } from "react";
-import Web3 from "web3/dist/web3.min.js";
+import Application2 from "../contracts/Application2.json"
+import ApplicationManager from "../contracts/ApplicationManager.json";
+import getWeb3 from "../utils/getWeb3";
+import ReactLoading from "react-loading";
+import Main from './Main';
+
+
+const APP_CONTRACT_ID = "103336484324403759599041858299973839245551266587824506833816437342973930608163";
 
 export default function Licence(){
-    const [accounts,setAccounts]=useState();
+    const [haveLicense,setHaveLicense]=useState(null);
+    const [error,setError]=useState(false);
+    const checkLicense = async (web3, account) => {
+        const networkId = await web3.eth.net.getId();
+        const networks = Object.values(ApplicationManager.networks);
+        const deployedNetwork = networks[networkId ?? 0] || networks[0];
+        const appManagerInstance = new web3.eth.Contract(
+            ApplicationManager.abi,
+            deployedNetwork && deployedNetwork.address
+          );
+        const {appAddress} = await appManagerInstance.methods.getApplication(APP_CONTRACT_ID).call({from: account});
+        console.log(appAddress)
+        const appContract = await new web3.eth.Contract(Application2.abi, appAddress);
+        var check = await appContract.methods.checkLicense(account).call({from: account})
+        setHaveLicense(check);
+    }
     useEffect(()=>{
         const load = async () =>{
-            const web3=new Web3(Web3.givenProvider || "http://localhost:8575");
-            const accounts=await web3.eth.requestAccounts();
-            console.log(web3);
-            setAccounts(accounts[0]);
+            try {
+                const web3= await getWeb3()
+                const accounts = await web3?.eth.getAccounts();
+                await checkLicense(web3, accounts[0]);
+                window.ethereum.on('accountsChanged', async (accounts) => {
+                    await checkLicense(web3, accounts[0]);
+                })
+                
+            } catch (error) {
+                console.log(error);
+                setError(true)
+            }
         }
         load();
-    },[]);
-
-    const handleLoadLicence = useCallback(async ()=>{
-        if (!window.ethereum)
-            alert("PLEASE ACTIVATE METAMASK");
-        else{
-            const accs=await window.ethereum.request({
-                method:"eth_requestAccounts"
-            });
-            console.log(accs[0]);
-        }
     },[]);
 
     return (
         <div className="licence">
             <div className="licence-notif">
-                {accounts? accounts : <div>You don't have any licences.</div>}
-                
-
+                {error === true ? <div>Can't find application contract.</div> : 
+                haveLicense == null ?  <ReactLoading type="spin" color="#0000FF"
+        height={100} width={50} /> :
+                haveLicense?  <Main/> : <div>You don't have license.</div>}
             </div>
-            <button onClick={handleLoadLicence}>Load Licence</button>
         </div>
     )
 }

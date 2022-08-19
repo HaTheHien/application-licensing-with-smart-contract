@@ -9,10 +9,17 @@ function App() {
     <>
       <NavBar/>
       <div className='container'>
+      <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100vh',
+          }}
+        >
         <Routes>
-          <Route path='/calculator' element={<Main/>}/>
-          <Route path='/manage-licence' element={<Licence/>}/>
-        </Routes>
+          <Route path='/' element={<Licence/>}/>
+        </Routes></div>
       </div>
     </>
   );
