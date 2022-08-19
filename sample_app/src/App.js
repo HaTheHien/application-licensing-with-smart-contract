@@ -7,11 +7,19 @@ import Licence from './components/Licence';
 function App() {
   return (
     <>
-      {/* <NavBar/> */}
+      <NavBar/>
       <div className='container'>
+      <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100vh',
+          }}
+        >
         <Routes>
           <Route path='/' element={<Licence/>}/>
-        </Routes>
+        </Routes></div>
       </div>
     </>
   );

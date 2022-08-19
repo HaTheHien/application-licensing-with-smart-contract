@@ -9,18 +9,18 @@ module.exports = async function (deployer, network, accounts) {
 };
 
 const app1 = {
-  id: web3.utils.toBN(web3.utils.soliditySha3("com.example.gallery_one")),
-  price: web3.utils.toWei("0.5", "ether"),
+  id: web3.utils.toBN(web3.utils.soliditySha3("com.example.todo")),
+  price: web3.utils.toWei("0.05", "ether"),
   contentHash: "",
-  name: "Gallery one",
+  name: "Todo",
   timestamp: web3.utils.toBN("1660299317772"),
 };
 
 const app2 = {
-  id: web3.utils.toBN(web3.utils.soliditySha3("com.example.gallery_two")),
+  id: web3.utils.toBN(web3.utils.soliditySha3("com.example.calculator")),
   price: web3.utils.toWei("0.15", "ether"),
   contentHash: "",
-  name: "Gallery two",
+  name: "Calculator",
   timestamp: web3.utils.toBN("1660299317773"),
 };
 
@@ -43,5 +43,11 @@ async function deployApplication(accounts, appManagerInstance) {
     from: accounts[1],
   });
   console.log(apps2);
-  
+
+  const info1 = await appManagerInstance.getApplicationFromAddress(apps1[0]);
+  const info2 = await appManagerInstance.getApplicationFromAddress(apps2[0]);
+
+  console.log(info1.id.toString());
+  console.log(info2.id.toString());
+
 }
