@@ -6,8 +6,6 @@ import "./License2.sol";
 import "./ApplicationManager.sol";
 
 contract Application2 is Ownable {
-  uint256 constant LICENSE_LIFE_TIME = 365 days;
-
   event LicenseCreated(
     address indexed appOwner,
     address indexed owner,
@@ -15,6 +13,14 @@ contract Application2 is Ownable {
     uint256 licenseId,
     uint256 dateCreated,
     uint256 dateExpired
+  );
+
+  event ApplicationEdited(
+    address indexed owner,
+    uint256 appId,
+    uint256 price, 
+    string contentHash,
+    uint256 licenseLifeTime
   );
 
   uint256 public id;
@@ -25,6 +31,7 @@ contract Application2 is Ownable {
   uint256 public version;
   // number of sold licenses
   uint256 public sold;
+  uint256 public licenseLifeTime;
 
   ApplicationManager applicationManager;
   License2[] licenses;
@@ -38,7 +45,8 @@ contract Application2 is Ownable {
     string memory _contentHash,
     string memory _name,
     uint256 _dateCreated,
-    uint256 _version
+    uint256 _version,
+    uint256 _licenseLifeTime
   ) {
     id = _id;
     price = _price;
@@ -47,6 +55,7 @@ contract Application2 is Ownable {
     dateCreated = _dateCreated;
     version = _version;
     sold = 0;
+    licenseLifeTime = _licenseLifeTime;
 
     applicationManager = ApplicationManager(msg.sender);
   }
@@ -79,7 +88,7 @@ contract Application2 is Ownable {
     License2 l = new License2(
       id,
       block.timestamp,
-      LICENSE_LIFE_TIME + block.timestamp,
+      licenseLifeTime == 0 ? 0 : licenseLifeTime + block.timestamp,
       _licenseOwner,
       payable(address(this))
     );
@@ -188,6 +197,47 @@ contract Application2 is Ownable {
   {
     delete ownerLicense[payable(address(oldOwner))];
     ownerLicense[newOwner] = License2(msg.sender);
+  }
+
+  function editApplication(uint256 _price, string memory _contentHash, uint256 _licenseLifeTime) public onlyOwner {
+    price = _price;
+    contentHash = _contentHash;
+    licenseLifeTime = _licenseLifeTime;
+    version++;
+
+    emit ApplicationEdited(
+      owner(),
+      id,
+      price,
+      contentHash,
+      licenseLifeTime
+    );
+  }
+
+  function checkLicense(address _address)
+    public
+    view
+    returns (bool)
+  {
+    if (owner() == _address)
+    {
+      return true;
+    }
+    License2 license = ownerLicense[_address];
+    if (address(license) != address(0) && license.checkOwner(_address) == true)
+    {
+      return true;
+    }
+    else
+    {
+      for (uint256 index = 0; index < licenses.length; index++) {
+        if (licenses[index].checkOwner(_address) == true)
+        {
+          return true;
+        }
+      }
+     }
+    return false;
   }
 
   receive() external payable priceOk(msg.value) {

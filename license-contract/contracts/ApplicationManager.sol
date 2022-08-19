@@ -39,7 +39,8 @@ contract ApplicationManager {
     uint256 _price,
     string memory _contentHash,
     string memory _name,
-    uint256 _dateCreated
+    uint256 _dateCreated,
+    uint256 _licenseLifeTime
   ) internal returns (uint256) {
     require(_isApplicationNotExist(_appId));
 
@@ -49,7 +50,8 @@ contract ApplicationManager {
       _contentHash,
       _name,
       _dateCreated,
-      0
+      0,
+      _licenseLifeTime
     );
 
     _app.transferOwnership(msg.sender);
@@ -95,10 +97,22 @@ contract ApplicationManager {
     uint256 _price,
     string memory _contentHash,
     string memory _name,
+    uint256 _dateCreated,
+    uint256 _licenseLifeTime
+  ) public returns (uint256) {
+    return
+      _createApplication(_appId, _price, _contentHash, _name, _dateCreated, _licenseLifeTime);
+  }
+
+  function createApplication(
+    uint256 _appId,
+    uint256 _price,
+    string memory _contentHash,
+    string memory _name,
     uint256 _dateCreated
   ) public returns (uint256) {
     return
-      _createApplication(_appId, _price, _contentHash, _name, _dateCreated);
+      _createApplication(_appId, _price, _contentHash, _name, _dateCreated, 365 days);
   }
 
   function getPrice(uint256 _appId) public view returns (uint256) {
@@ -154,7 +168,9 @@ contract ApplicationManager {
       uint256 dateCreated,
       uint256 version,
       uint256 totalSold,
-      address owner
+      address owner,
+      uint256 licenseLifeTime,
+      address appAddress
     )
   {
     require(_isApplicationExist(_appId));
@@ -167,9 +183,19 @@ contract ApplicationManager {
       application.dateCreated(),
       application.version(),
       application.sold(),
-      application.owner()
+      application.owner(),
+      application.licenseLifeTime(),
+      address(application)
     );
   }
+
+  // function editApplication(uint256 _appId, uint256 _price, string memory _contentHash, uint256 _licenseLifeTime)
+  //   public
+  // {
+  //   require(_isApplicationExist(_appId));
+  //   Application2 application = applications[_appId];
+  //   application.editApplication(_price, _contentHash, _licenseLifeTime);
+  // }
 
   function getApplicationFromAddress(address payable _appAddress)
     public
@@ -182,7 +208,8 @@ contract ApplicationManager {
       uint256 dateCreated,
       uint256 version,
       uint256 totalSold,
-      address owner
+      address owner,
+      uint256 licenseLifeTime
     )
   {
     Application2 application = Application2(_appAddress);
@@ -194,7 +221,8 @@ contract ApplicationManager {
       application.dateCreated(),
       application.version(),
       application.sold(),
-      application.owner()
+      application.owner(),
+      application.licenseLifeTime()
     );
   }
 
