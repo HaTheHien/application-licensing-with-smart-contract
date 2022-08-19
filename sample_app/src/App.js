@@ -7,11 +7,10 @@ import Licence from './components/Licence';
 function App() {
   return (
     <>
-      <NavBar/>
+      {/* <NavBar/> */}
       <div className='container'>
         <Routes>
-          <Route path='/calculator' element={<Main/>}/>
-          <Route path='/manage-licence' element={<Licence/>}/>
+          <Route path='/' element={<Licence/>}/>
         </Routes>
       </div>
     </>
