@@ -79,12 +79,76 @@ const AppManagementContextProvider = ({ children }) => {
           web3,
           accounts
         );
+        await loadApplicationData(
+          etherState.appManagerContract,
+          web3,
+          accounts
+        );
       }
     },
     [
       etherState.web3,
       etherState.accounts,
       etherState.appManagerContract,
+      loadPublishedApplicationData,
+      loadApplicationData,
+    ]
+  );
+
+  const editApp = useCallback(
+    async (data) => {
+      const web3 = etherState.web3;
+      const accounts = etherState.accounts ?? [];
+
+      if (web3 && etherState.appManagerContract && accounts.length !== 0) {
+        try {
+          licenseDispatch({
+            type: "SET_IS_TRANSACTION_PROCESSING",
+            payload: true,
+          });
+          await ApplicationContractService.editApp(
+            etherState.appManagerContract,
+            data,
+            accounts,
+            web3
+          );
+
+          licenseDispatch({
+            type: "SET_IS_TRANSACTION_PROCESSING",
+            payload: false,
+          });
+          licenseDispatch({
+            type: "SET_IS_TRANSACTION_STATUS_DIALOG_OPENED",
+            payload: true,
+          });
+
+          // console.log(response);
+          await loadPublishedApplicationData(
+            etherState.appManagerContract,
+            web3,
+            accounts
+          );
+          await loadApplicationData(
+            etherState.appManagerContract,
+            web3,
+            accounts
+          );
+        } catch (e) {
+          licenseDispatch({
+            type: "SET_IS_TRANSACTION_PROCESSING",
+            payload: false,
+          });
+          licenseDispatch({ type: "SET_IS_TRANSACTION_FAILED", payload: true });
+          console.log(e);
+        }
+      }
+    },
+    [
+      etherState.accounts,
+      etherState.appManagerContract,
+      etherState.web3,
+      licenseDispatch,
+      loadApplicationData,
       loadPublishedApplicationData,
     ]
   );
@@ -169,8 +233,9 @@ const AppManagementContextProvider = ({ children }) => {
       dispatch,
       createNewApp,
       purchaseLicense,
+      editApp,
     };
-  }, [createNewApp, purchaseLicense, state]);
+  }, [editApp, createNewApp, purchaseLicense, state]);
 
   return (
     <AppManagementContext.Provider value={contextValue}>

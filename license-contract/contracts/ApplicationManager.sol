@@ -223,7 +223,8 @@ contract ApplicationManager {
       uint256 version,
       uint256 totalSold,
       address owner,
-      uint256 licenseLifeTime
+      uint256 licenseLifeTime,
+      address appAddress
     )
   {
     Application2 application = Application2(_appAddress);
@@ -236,7 +237,8 @@ contract ApplicationManager {
       application.version(),
       application.sold(),
       application.owner(),
-      application.licenseLifeTime()
+      application.licenseLifeTime(),
+      address(application)
     );
   }
 

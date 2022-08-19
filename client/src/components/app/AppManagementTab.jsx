@@ -5,12 +5,14 @@ import { AppItemDialog } from "components/app";
 import AdminAppItem from "components/app/AdminAppItem";
 import AppLoadingProgressIndicator from "components/app/AppLoadingProgressIndicator";
 import CreateAppDialog from "components/app/CreateAppDialog";
+import EditAppDialog from "components/app/EditAppDialog";
 import { useAppManagementContext } from "context";
 import { useCallback, useState } from "react";
 
 const AppManagementTab = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [appDialogOpen, setAppDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedApp, setSelectedApp] = useState(null);
 
   const {
@@ -67,6 +69,11 @@ const AppManagementTab = () => {
                     setSelectedApp(app);
                     setAppDialogOpen(true);
                   }}
+                  onEditButtonClicked={(e) => {
+                    e.stopPropagation();
+                    setSelectedApp(app);
+                    setEditDialogOpen(true);
+                  }}
                 />
               </Box>
             ))}
@@ -84,6 +91,12 @@ const AppManagementTab = () => {
         //   setAppDialogOpen(false);
         //   setPurchaseDialogOpen(true);
         // }, [])}
+      />
+
+      <EditAppDialog
+        open={editDialogOpen}
+        openChanged={setEditDialogOpen}
+        app={selectedApp}
       />
     </>
   );

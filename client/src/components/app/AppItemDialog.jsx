@@ -57,6 +57,19 @@ const AppItemDialog = ({ app, open, openChanged, onPurchaseButtonClicked }) => {
               </Stack>
 
               <Stack direction="row" spacing={1} alignItems="baseline">
+                <Typography fontWeight="bold">📍 Address</Typography>
+                <Typography
+                  level="caption"
+                  fontFamily="monospace"
+                  noWrap
+                  overflow="hidden"
+                  textOverflow="ellipsis"
+                >
+                  {app.appAddress}
+                </Typography>
+              </Stack>
+
+              <Stack direction="row" spacing={1} alignItems="baseline">
                 <Typography fontWeight="bold">👤 By</Typography>
                 <Typography
                   level="caption"

@@ -9,4 +9,6 @@ export const appType = PropTypes.shape({
   version: PropTypes.number,
   totalSold: PropTypes.number,
   owner: PropTypes.string,
+  address: PropTypes.string,
+  licenseLifeTime: PropTypes.number,
 });

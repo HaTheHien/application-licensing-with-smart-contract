@@ -144,7 +144,7 @@ contract("Application2", (accounts) => {
 
     const appContract = await Application2.at(appAddresses[0]);
 
-    await appContract.editApplication(price, "abc", amount, {
+    await appContract.editApplication("New name", price, "abc", amount, {
       from: accounts[0],
     });
 
@@ -156,7 +156,7 @@ contract("Application2", (accounts) => {
     assert.equal(app.id.eq(app1.id), true, "Wrong APP ID");
     assert.equal(app.price.eq(web3.utils.toBN(price)), true, "Wrong price");
     assert.equal(app.contentHash, "abc", "Wrong content hash");
-    assert.equal(app.name, app1.name, "Wrong name");
+    assert.equal(app.name, "New name", "Wrong name");
     assert.equal(
       app.licenseLifeTime.eq(amount),
       true,

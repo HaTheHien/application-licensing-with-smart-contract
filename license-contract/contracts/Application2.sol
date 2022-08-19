@@ -18,6 +18,7 @@ contract Application2 is Ownable {
   event ApplicationEdited(
     address indexed owner,
     uint256 appId,
+    string name,
     uint256 price,
     string contentHash,
     uint256 licenseLifeTime
@@ -200,16 +201,18 @@ contract Application2 is Ownable {
   }
 
   function editApplication(
+    string memory _appName,
     uint256 _price,
     string memory _contentHash,
     uint256 _licenseLifeTime
   ) public onlyOwner {
+    name = _appName;
     price = _price;
     contentHash = _contentHash;
     licenseLifeTime = _licenseLifeTime;
     version++;
 
-    emit ApplicationEdited(owner(), id, price, contentHash, licenseLifeTime);
+    emit ApplicationEdited(owner(), id, name, price, contentHash, licenseLifeTime);
   }
 
   function checkLicense(address _address) public view returns (bool) {

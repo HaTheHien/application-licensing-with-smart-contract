@@ -1,4 +1,9 @@
+import { Application2 } from "contracts";
+import dayjs from "dayjs";
+import duration from "dayjs/plugin/duration";
 import { ApplicationConverter } from "types";
+
+dayjs.extend(duration);
 
 async function loadApplicationDataFromAddress(
   contract,
@@ -94,10 +99,32 @@ async function purchaseLicense(contract, appAddress, price, accounts, web3) {
   });
 }
 
+async function editApp(contract, data, accounts, web3) {
+  if (!data) {
+    throw new Error("Invalid data");
+  }
+  if (!data?.appAddress) {
+    throw new Error("App address not found");
+  }
+
+  const appContract = new web3.eth.Contract(Application2.abi, data.appAddress);
+  await appContract.methods
+    .editApplication(
+      data.name,
+      web3.utils.toWei(data.priceInEther, "ether"),
+      data.contentHash,
+      web3.utils.toBN(
+        dayjs.duration(+data.lifetimeAmount, data.lifetimeUnit).asSeconds()
+      )
+    )
+    .send({ from: accounts[0] });
+}
+
 export const ApplicationContractService = {
   // loadApplicationDataFromAddress,
   loadApplicationData,
   loadPublishedApplicationData,
   createNewApp,
   purchaseLicense,
+  editApp,
 };

@@ -84,7 +84,7 @@ const Home = () => {
         <DialogContent>
           <Stack width={1} direction="row" spacing={2} alignItems="center">
             <CircularProgress />
-            <Typography>Processing your purchase</Typography>
+            <Typography>Processing your transaction</Typography>
           </Stack>
         </DialogContent>
       </Dialog>

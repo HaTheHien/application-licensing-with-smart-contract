@@ -8,6 +8,8 @@ function fromContract(app, web3) {
     version: +app.version,
     totalSold: +app.totalSold,
     owner: app.owner,
+    appAddress: app.appAddress,
+    licenseLifeTime: +app.licenseLifeTime,
   };
 }
 

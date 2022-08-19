@@ -11,7 +11,7 @@ import { useAppItem } from "hooks";
 import PropTypes from "prop-types";
 import { appType } from "types";
 
-const AdminAppItem = ({ app, onClick, ...others }) => {
+const AdminAppItem = ({ app, onClick, onEditButtonClicked, ...others }) => {
   const {
     state: { web3, accounts },
   } = useEtherContext();
@@ -72,6 +72,20 @@ const AdminAppItem = ({ app, onClick, ...others }) => {
         </Typography>
       </Stack>
 
+      <Stack direction="row" alignItems="baseline" spacing={0.5} width={1}>
+        <Typography>Address</Typography>
+
+        <Typography
+          level="caption"
+          fontFamily="monospace"
+          noWrap
+          overflow="hidden"
+          textOverflow="ellipsis"
+        >
+          {app.appAddress}
+        </Typography>
+      </Stack>
+
       <Stack
         direction="row"
         alignItems="center"
@@ -79,7 +93,7 @@ const AdminAppItem = ({ app, onClick, ...others }) => {
         spacing={1}
         py={2}
       >
-        <IconButton variant="solid" size="sm">
+        <IconButton variant="solid" size="sm" onClick={onEditButtonClicked}>
           <ModeEditOutlineOutlinedIcon />
         </IconButton>
 
@@ -112,6 +126,7 @@ const AdminAppItem = ({ app, onClick, ...others }) => {
 AdminAppItem.propTypes = {
   app: appType,
   onClick: PropTypes.func,
+  onEditButtonClicked: PropTypes.func,
 };
 
 export default AdminAppItem;
