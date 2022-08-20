@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import ApplicationManager from "contracts/ApplicationManager.json";
 import PropTypes from "prop-types";
 import {
   createContext,
@@ -9,6 +9,7 @@ import {
   useReducer,
 } from "react";
 import { etherReducer, initialEtherState } from "stores";
+import getWeb3 from "utils/getWeb3";
 
 const EtherContext = createContext({
   state: initialEtherState,
@@ -22,68 +23,94 @@ export const useEtherContext = () => {
 export const EtherContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(etherReducer, initialEtherState);
 
-  // console.log(state);
+  const onAccountChanged = useCallback(
+    async (web3) => {
+      // console.log("web3???", web3);
+      console.log("onAccountChanged");
+      const web3Instance = web3 ?? state?.web3;
 
-  const getWalletInfo = useCallback(async (signer) => {
-    if (!signer) return;
+      const changedAccounts = await web3Instance?.eth.getAccounts();
+      dispatch({ type: "SET_ACCOUNTS", payload: changedAccounts });
+      console.log(`New accounts ${changedAccounts}`);
+      dispatch({ type: "SET_METAMASK_ENABLED", payload: true });
+    },
+    [state.web3]
+  );
 
-    const balance = ethers.utils.formatEther(await signer.getBalance());
-    const address = await signer.getAddress();
+  useEffect(() => {
+    (async () => {
+      try {
+        // const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const web3 = await getWeb3();
+        console.log("Web3 instance: ", web3);
+        dispatch({ type: "SET_PROVIDER", payload: web3 });
 
-    dispatch({ type: "SET_WALLET_INFO", payload: { balance, address } });
+        if (!web3) {
+          dispatch({ type: "SET_METAMASK_ENABLED", payload: false });
+          return;
+        }
+
+        const changedAccounts = await web3?.eth.getAccounts();
+        dispatch({ type: "SET_ACCOUNTS", payload: changedAccounts });
+        console.log(`Account address ${changedAccounts}`);
+
+        dispatch({ type: "SET_METAMASK_ENABLED", payload: true });
+      } catch (e) {
+        console.log(e);
+        dispatch({ type: "SET_METAMASK_ENABLED", payload: false });
+      }
+    })();
   }, []);
 
-  const loadMetamask = useCallback(async () => {
-    try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      dispatch({ type: "SET_PROVIDER", payload: provider });
+  const loadContract = useCallback(async (web3) => {
+    if (web3) {
+      const networkId = await web3.eth.net.getId();
+      const networks = Object.values(ApplicationManager.networks);
+      const deployedNetwork = networks[networkId ?? 0] || networks[0];
+      // console.log(deployedNetwork.address);
 
-      const signer = await provider.getSigner();
-      dispatch({ type: "SET_SIGNER", payload: signer });
-      await getWalletInfo(signer);
-
-      dispatch({ type: "SET_METAMASK_ENABLED", payload: true });
-    } catch (e) {
-      console.log(e);
-      dispatch({ type: "SET_METAMASK_ENABLED", payload: false });
+      try {
+        const contract = new web3.eth.Contract(
+          ApplicationManager.abi,
+          deployedNetwork && deployedNetwork.address
+        );
+        if (contract) {
+          dispatch({ type: "SET_APP_MANAGER_CONTRACT", payload: contract });
+        }
+      } catch (e) {
+        console.log(e);
+      }
     }
-  }, [getWalletInfo]);
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      if (state.web3) {
+        await loadContract(state.web3);
+      }
+    })();
+  }, [loadContract, state.web3]);
+
+  useEffect(() => {
+    const cb = async () => {
+      await onAccountChanged(state.web3);
+    };
+    if (window.ethereum) {
+      window.ethereum?.on("accountsChanged", cb);
+    }
+    return () => {
+      console.log("remove previous listener");
+      window.ethereum?.removeListener("accountsChanged", cb);
+    };
+  }, [onAccountChanged, state.web3]);
 
   const contextValue = useMemo(
     () => ({
       state,
       dispatch,
-      getWalletInfo,
-      loadMetamask,
     }),
-    [state, getWalletInfo, loadMetamask]
+    [state]
   );
-
-  useEffect(() => {
-    if (!window.ethereum) {
-      return;
-    }
-
-    window.ethereum
-      .request({ method: "eth_requestAccounts" })
-      .then(() => loadMetamask())
-      .catch((err) => {
-        if (err.code === 4001) {
-          console.log("not connected to metamask");
-        } else {
-          console.log(err);
-        }
-      });
-
-    const cb = () => loadMetamask();
-    window.ethereum.on("chainChanged", cb);
-    window.ethereum.on("accountsChanged", cb);
-
-    return () => {
-      window.ethereum.removeListener("chainChanged", cb);
-      window.ethereum.removeListener("accountsChanged", cb);
-    };
-  }, [loadMetamask]);
 
   return (
     <EtherContext.Provider value={contextValue}>

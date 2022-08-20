@@ -1,4 +1,4 @@
-import { Button, Sheet, TextField, Typography, inputClasses } from "@mui/joy";
+import { Button, Sheet, TextField, Typography } from "@mui/joy";
 import {
   Dialog,
   DialogActions,
@@ -10,25 +10,26 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { ethers } from "ethers";
+import { useAppManagementContext } from "context";
 import PropTypes from "prop-types";
 import { useCallback } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { ETHER_SYMBOL } from "utils";
 
 const CreateAppDialog = ({ open, openChanged }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const { createNewApp } = useAppManagementContext();
 
   const {
     control,
     setValue,
-    getValues,
-    formState: { errors, isValid },
+    formState: { errors },
     handleSubmit,
     reset,
   } = useForm({
     defaultValues: {
-      id: "",
+      // id: "",
       packageName: "",
       name: "",
       dateCreated: 0,
@@ -37,38 +38,32 @@ const CreateAppDialog = ({ open, openChanged }) => {
       content: "",
       version: 0,
       price: "",
-      formattedPrice: null,
+      // formattedPrice: null,
     },
+    mode: "onBlur",
   });
 
   const submit = useCallback(async () => {
     try {
       setValue("dateCreated", Date.now());
-      const packageName = getValues("packageName");
-      setValue(
-        "id",
-        ethers.utils.keccak256(ethers.utils.toUtf8Bytes(packageName))
-      );
-      setValue(
-        "formattedPrice",
-        ethers.utils.formatUnits(getValues("price"), "ether")
-      );
-      if (isValid) {
-        await handleSubmit(
-          async (data) => {
-            console.log(data);
-            openChanged?.call(false);
-            reset();
-          },
-          (errors) => console.log(errors)
-        )();
-      }
+      await handleSubmit(
+        async (data) => {
+          console.log(data);
+          openChanged?.call(false);
+          await createNewApp(data);
+          reset();
+        },
+        (errors) => console.log(errors)
+      )();
     } catch (e) {
       console.log(e);
     }
-  }, [getValues, handleSubmit, isValid, openChanged, reset, setValue]);
+  }, [createNewApp, handleSubmit, openChanged, reset, setValue]);
 
-  const onClose = useCallback(() => openChanged?.call(false), [openChanged]);
+  const onClose = useCallback(() => {
+    reset();
+    openChanged?.call(false);
+  }, [openChanged, reset]);
 
   return (
     <Dialog open={!!open} onClose={onClose} fullScreen={fullScreen}>
@@ -139,14 +134,12 @@ const CreateAppDialog = ({ open, openChanged }) => {
                 size="md"
                 variant="outlined"
                 startDecorator={<Typography>🪙</Typography>}
-                endDecorator={
-                  <Typography>{ethers.constants.EtherSymbol}</Typography>
-                }
+                endDecorator={<Typography>{ETHER_SYMBOL}</Typography>}
                 fullWidth
                 error={!!errors["price"]}
                 helperText={
                   errors?.price?.message ||
-                  `Currency is ETH ${ethers.constants.EtherSymbol}, Enter 0 when the license is free`
+                  `Currency is ETH ${ETHER_SYMBOL}, Enter 0 when the license is free`
                 }
               />
             )}
@@ -160,7 +153,6 @@ const CreateAppDialog = ({ open, openChanged }) => {
               <MuiTextField
                 required
                 {...field}
-                className={inputClasses}
                 label="Description"
                 size="md"
                 variant="outlined"
@@ -177,6 +169,10 @@ const CreateAppDialog = ({ open, openChanged }) => {
         </Stack>
 
         <DialogActions>
+          <Button onClick={onClose} autoFocus variant="text">
+            Cancel
+          </Button>
+
           <Button onClick={submit} autoFocus variant="soft">
             OK
           </Button>

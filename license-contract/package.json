@@ -6,9 +6,16 @@
   "author": "Ha The Hien",
   "license": "MIT",
   "private": true,
+  "scripts": {
+    "truffle-compile": "truffle compile",
+    "truffle-deploy": "truffle deploy",
+    "truffle-migrate": "truffle migrate --reset",
+    "truffle-test": "truffle test --stacktrace-extra"
+  },
   "devDependencies": {
-    "@openzeppelin/contracts": "^4.7.2",
+    "@openzeppelin/contracts": "^4.7.3",
     "ethlint": "^1.2.5",
+    "ganache": "^7.4.0",
     "prettier": "^2.7.1",
     "prettier-plugin-solidity": "^1.0.0-beta.24"
   }

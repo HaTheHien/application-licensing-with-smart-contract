@@ -1,36 +1,43 @@
 export const initialEtherState = {
-  ether: null,
-  balance: null,
-  address: null,
-  signer: null,
+  web3: null,
   metaMaskEnabled: false,
+  accounts: null,
+  appManagerContract: null,
 };
 
 export const etherReducer = (state, action) => {
   switch (action.type) {
+    case "SET_APP_MANAGER_CONTRACT": {
+      return {
+        ...state,
+        appManagerContract: action?.payload || state.appManagerContract,
+      };
+    }
     case "SET_PROVIDER": {
       return {
         ...state,
-        ether: action?.payload || state.ether,
+        web3: action?.payload || state.web3,
       };
     }
-    case "SET_SIGNER": {
+    case "SET_ACCOUNTS": {
       return {
         ...state,
-        signer: action?.payload || state.signer,
+        accounts: action?.payload,
       };
     }
     case "SET_METAMASK_ENABLED": {
+      const enabled = !!action?.payload;
+      const newState = !enabled
+        ? {
+            web3: null,
+            metaMaskEnabled: false,
+            accounts: null,
+          }
+        : {};
       return {
         ...state,
-        metaMaskEnabled: !!action?.payload,
-      };
-    }
-    case "SET_WALLET_INFO": {
-      return {
-        ...state,
-        balance: action?.payload?.balance || state.balance,
-        address: action?.payload?.address || state.address,
+        metaMaskEnabled: enabled,
+        ...newState,
       };
     }
     default:

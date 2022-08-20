@@ -1,20 +1,35 @@
-import PropTypes from "prop-types";
-import { appType } from "types";
-import Card from "@mui/joy/Card";
-import { Divider, Stack } from "@mui/material";
-import { Button, Sheet, Typography } from "@mui/joy";
-import CardOverflow from "@mui/joy/CardOverflow";
-import { ethers } from "ethers";
-import dayjs from "dayjs";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DownloadIcon from "@mui/icons-material/Download";
-import relativeTime from "dayjs/plugin/relativeTime";
+import { Button, Link, Sheet, Typography } from "@mui/joy";
+import Card from "@mui/joy/Card";
+import CardOverflow from "@mui/joy/CardOverflow";
 import IconButton from "@mui/joy/IconButton";
+import { Divider, Stack } from "@mui/material";
+import { useEtherContext } from "context";
+import { useLicenseManagementContext } from "context/LicenseManagementContext";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import { useAppItem } from "hooks";
+import PropTypes from "prop-types";
+import { IpfsService } from "services";
+import { appType } from "types";
 
 dayjs.extend(relativeTime);
 
-const AppItem = ({ app, onClick }) => {
+const AppItem = ({ app, onClick, onPurchaseButtonClicked, ...others }) => {
+  const {
+    state: { web3, accounts },
+  } = useEtherContext();
+  const {
+    state: { licenses },
+  } = useLicenseManagementContext();
+
+  const { isDownloadable, isAppOwner, formattedPrice, isLicenseOwner } =
+    useAppItem(app, web3, accounts, licenses);
+
   return (
     <Card
+      {...others}
       onClick={onClick}
       variant="outlined"
       sx={{
@@ -44,9 +59,7 @@ const AppItem = ({ app, onClick }) => {
 
       <Stack direction="row">
         <Typography fontSize="lg" fontWeight="lg">
-          🪙{" "}
-          {ethers.utils.formatEther(BigInt(app.price)).slice(0, 8).toString()}{" "}
-          ETH
+          🪙 {formattedPrice}
         </Typography>
       </Stack>
 
@@ -89,7 +102,7 @@ const AppItem = ({ app, onClick }) => {
             overflow="hidden"
             textOverflow="ellipsis"
           >
-            {app.owner}
+            {isAppOwner ? "me" : app.owner}
           </Typography>
         </Sheet>
       </Stack>
@@ -101,12 +114,40 @@ const AppItem = ({ app, onClick }) => {
         spacing={1}
         py={2}
       >
-        <IconButton variant="soft" size="sm">
-          <DownloadIcon />
-        </IconButton>
-        <Button variant="solid" size="sm">
-          Buy license
-        </Button>
+        {isLicenseOwner && (
+          <Stack direction="row" alignItems="center" spacing={0.5}>
+            <CheckCircleIcon color="success" />
+            <Typography color="success">Purchased</Typography>
+          </Stack>
+        )}
+        {isAppOwner && <Typography>👤 My app</Typography>}
+
+        <Link
+          target="_blank"
+          rel="noopener noreferrer"
+          href={
+            app?.contentHash
+              ? IpfsService.getLinkFromCidV0(app?.contentHash)
+              : null
+          }
+        >
+          <IconButton
+            variant="soft"
+            size="sm"
+            disabled={!isDownloadable}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <DownloadIcon />
+          </IconButton>
+        </Link>
+
+        {!isAppOwner && !isLicenseOwner && (
+          <Button variant="solid" size="sm" onClick={onPurchaseButtonClicked}>
+            Buy license
+          </Button>
+        )}
       </Stack>
 
       <CardOverflow
@@ -133,6 +174,7 @@ const AppItem = ({ app, onClick }) => {
 AppItem.propTypes = {
   app: appType,
   onClick: PropTypes.func,
+  onPurchaseButtonClicked: PropTypes.func,
 };
 
 export default AppItem;
