@@ -1,15 +1,19 @@
 import Main from "components/Main";
+import { LicenseContextProvider } from "context/LicenseContext";
 import Application2 from "contracts/Application2.json";
 import ApplicationManager from "contracts/ApplicationManager.json";
-import React, { useCallback, useEffect, useState } from "react";
-import ReactLoading from "react-loading";
+import { useCallback, useEffect, useState } from "react";
 import getWeb3 from "utils/getWeb3";
 
 const APP_CONTRACT_ID =
   "81180384624698422361266057088145727569009936601858239732761166602376299871175";
 
+const PREMIUM_APP_CONTRACT_ID =
+  "77501300691031952828278645316624539123483604436724659324756550531667030841387";
+
 export default function Licence() {
   const [haveLicense, setHaveLicense] = useState(null);
+  const [havePremiumLicense, setHavePremiumLicense] = useState(null);
   const [error, setError] = useState(false);
 
   const checkLicense = useCallback(async (web3, account) => {
@@ -31,11 +35,31 @@ export default function Licence() {
       appAddress
     );
 
-    var check = await appContract.methods
+    const check = await appContract.methods
       .checkLicense(account)
       .call({ from: account });
 
     setHaveLicense(check);
+
+    try {
+      const premiumApp = await appManagerInstance.methods
+        .getApplication(web3.utils.toBN(PREMIUM_APP_CONTRACT_ID))
+        .call({ from: account });
+
+      const premiumAppContract = await new web3.eth.Contract(
+        Application2.abi,
+        premiumApp?.appAddress
+      );
+
+      const check = await premiumAppContract.methods
+        .checkLicense(account)
+        .call({ from: account });
+
+      setHavePremiumLicense(check);
+    } catch (e) {
+      // console.log("Cannot load premium license");
+      console.log(e)
+    }
   }, []);
 
   useEffect(() => {
@@ -61,9 +85,13 @@ export default function Licence() {
         {error === true ? (
           <div>Can't find application contract.</div>
         ) : haveLicense == null ? (
-          <ReactLoading type="spin" color="#0000FF" height={100} width={50} />
+          <div className="loader" />
         ) : haveLicense ? (
-          <Main />
+          <LicenseContextProvider
+            value={{ havePremiumLicense: havePremiumLicense }}
+          >
+            <Main />
+          </LicenseContextProvider>
         ) : (
           <div>You don't have license.</div>
         )}

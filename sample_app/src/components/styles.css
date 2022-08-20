@@ -49,25 +49,43 @@ body {
 .calc-body {
     max-width: 400px;
     margin: auto;
+    border: 1.25px solid #CDCDCD;
+    border-radius: 8px;
+    box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 1px 3px 0 rgba(0, 0, 0, 0.12);
 }
 
 .result {
-    height: 60px;
-    background-color: #bbb;
+    min-height: 160px;
+    background-color: #EFEFEF;
     width: 100%;
+    align-items: center;
+    justify-content: end;
+    display: flex;
+    padding: 0 8px;
 }
 
 .result p {
-    font-size: 20px;
+    font-size: 30px;
+    height: 100%;
+    overflow-wrap: anywhere;
+    text-align: end;
 }
 
 .buttons {
     display: block;
-    background-color: #bbb;
+    background-color: #FFFFFF;
 }
 
 .buttons button {
     width: 25%;
-    height: 60;
+    height: 60px;
     font-size: 30px;
+    border: 1px solid #CDCDCD;
+    background-color: white;
+}
+
+.buttons button:hover {
+    background-color: #EFEFEF;
+    border: 1px solid cornflowerblue;
+    color: cornflowerblue;
 }

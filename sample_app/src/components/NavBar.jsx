@@ -5,7 +5,7 @@ export default function NavBar() {
   return (
     <nav className="nav">
       <Link to="/" className="site-title">
-        Simple Calculation
+        Simple Calculator
       </Link>
       {/* <ul>
             <CustomLink to="/calculator">Main</CustomLink>

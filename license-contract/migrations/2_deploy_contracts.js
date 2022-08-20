@@ -6,10 +6,10 @@ const path = require("path");
  * @param {string} src  The path to the thing to copy.
  * @param {string} dest The path to the new copy.
  */
-var copyRecursiveSync = function (src, dest) {
-  var exists = fs.existsSync(src);
-  var stats = exists && fs.statSync(src);
-  var isDirectory = exists && stats.isDirectory();
+const copyRecursiveSync = function (src, dest) {
+  const exists = fs.existsSync(src);
+  const stats = exists && fs.statSync(src);
+  const isDirectory = exists && stats.isDirectory();
   if (isDirectory) {
     if (!fs.existsSync(dest)) {
       fs.mkdirSync(dest, { recursive: true });
@@ -48,6 +48,15 @@ const app2 = {
   name: "Calculator",
   timestamp: web3.utils.toBN("1660299317773"),
 };
+const app2Premium = {
+  id: web3.utils.toBN(
+    web3.utils.soliditySha3("com.example.calculator_premium")
+  ),
+  price: web3.utils.toWei("0.25", "ether"),
+  contentHash: "",
+  name: "Calculator (Premium)",
+  timestamp: web3.utils.toBN("1660299317773"),
+};
 
 async function deployApplication(accounts, appManagerInstance) {
   await appManagerInstance.createApplication(...Object.values(app1), {
@@ -55,6 +64,9 @@ async function deployApplication(accounts, appManagerInstance) {
   });
 
   await appManagerInstance.createApplication(...Object.values(app2), {
+    from: accounts[1],
+  });
+  await appManagerInstance.createApplication(...Object.values(app2Premium), {
     from: accounts[1],
   });
 
@@ -70,9 +82,11 @@ async function deployApplication(accounts, appManagerInstance) {
 
   const info1 = await appManagerInstance.getApplicationFromAddress(apps1[0]);
   const info2 = await appManagerInstance.getApplicationFromAddress(apps2[0]);
+  const info2Premium = await appManagerInstance.getApplicationFromAddress(apps2[1]);
 
   console.log(info1.id.toString());
   console.log(info2.id.toString());
+  console.log(info2Premium.id.toString());
 
   const contractDir = path.join(__dirname, "../../client/src/contracts/");
   const sampleAppContractDir = path.join(

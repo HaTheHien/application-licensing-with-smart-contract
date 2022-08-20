@@ -1,7 +1,15 @@
+import { useLicenseContext } from "context/LicenseContext";
+import { useCallback } from "react";
+
 export default function KeyPad(props) {
-  const buttonPressed = (e) => {
-    props.buttonPressed(e.target.name);
-  };
+  const buttonPressed = useCallback(
+    (e) => {
+      props.buttonPressed(e.target.name);
+    },
+    [props]
+  );
+
+  const { havePremiumLicense } = useLicenseContext();
 
   return (
     <div className="buttons">
@@ -27,7 +35,7 @@ export default function KeyPad(props) {
       <button name="9" onClick={buttonPressed}>
         9
       </button>
-      <button name="/" onClick={buttonPressed}>
+      <button name="/" onClick={buttonPressed} disabled={!havePremiumLicense}>
         /
       </button>
 
