@@ -9,7 +9,7 @@ import {
   useMemo,
   useReducer,
 } from "react";
-import { ApplicationContractService } from "services";
+import { ApplicationContractService, IpfsService } from "services";
 import { appManagementReducer, initialAppManagementState } from "stores";
 
 const AppManagementContext = createContext({
@@ -103,12 +103,27 @@ const AppManagementContextProvider = ({ children }) => {
       if (web3 && etherState.appManagerContract && accounts.length !== 0) {
         try {
           licenseDispatch({
+            type: "SET_IS_TRANSACTION_FAILED",
+            payload: false,
+          });
+          licenseDispatch({
             type: "SET_IS_TRANSACTION_PROCESSING",
             payload: true,
           });
+
+          let contentHash = data?.contentHash ?? "";
+          if (data?.uploadFile) {
+            const cid = await IpfsService.uploadApp(data?.id, data?.uploadFile);
+
+            if (cid) {
+              contentHash = cid.toString();
+              console.log("contenthash", contentHash);
+            }
+          }
+
           await ApplicationContractService.editApp(
             etherState.appManagerContract,
-            data,
+            { ...data, contentHash },
             accounts,
             web3
           );
@@ -168,6 +183,10 @@ const AppManagementContextProvider = ({ children }) => {
         if (index === -1) return;
 
         try {
+          licenseDispatch({
+            type: "SET_IS_TRANSACTION_FAILED",
+            payload: false,
+          });
           licenseDispatch({
             type: "SET_IS_TRANSACTION_PROCESSING",
             payload: true,

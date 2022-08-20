@@ -50,6 +50,7 @@ const LicenseManagementContextProvider = ({ children }) => {
       const accounts = etherState.accounts ?? [];
 
       if (web3 && licenseAddress && newOwnerAddress) {
+        dispatch({ type: "SET_IS_TRANSACTION_FAILED", payload: false });
         dispatch({ type: "SET_IS_TRANSACTION_PROCESSING", payload: true });
         const result = await LicenseContractService.transferLicense(
           licenseAddress,

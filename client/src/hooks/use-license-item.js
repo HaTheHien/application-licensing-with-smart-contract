@@ -9,7 +9,10 @@ dayjs.extend(RelativeTime);
 
 export function useLicenseItem(license, allApps) {
   const isEligible = useMemo(() => {
-    return dayjs((license?.dateExpired ?? 0) * 1000).isAfter(dayjs());
+    return (
+      license?.dateExpired === 0 ||
+      dayjs((license?.dateExpired ?? 0) * 1000).isAfter(dayjs())
+    );
   }, [license?.dateExpired]);
 
   const app = useMemo(() => {
@@ -21,11 +24,15 @@ export function useLicenseItem(license, allApps) {
   }, [app?.name]);
 
   const validUntil = useMemo(() => {
-    return dayjs((license?.dateExpired ?? 0) * 1000).fromNow();
+    return license?.dateExpired === 0
+      ? "∞"
+      : dayjs((license?.dateExpired ?? 0) * 1000).fromNow();
   }, [license?.dateExpired]);
 
   const formatExpiredDate = useMemo(() => {
-    return dayjs((license?.dateExpired ?? 0) * 1000).format("LLL");
+    return license?.dateExpired === 0
+      ? "Forever"
+      : dayjs((license?.dateExpired ?? 0) * 1000).format("LLL");
   }, [license?.dateExpired]);
 
   return {

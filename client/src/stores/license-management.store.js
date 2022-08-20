@@ -31,7 +31,9 @@ export const licenseManagementReducer = (state, action) => {
       return {
         ...state,
         isTransactionFailed: !!action?.payload,
-        isTransactionStatusDialogOpened: true,
+        isTransactionStatusDialogOpened: action?.payload
+          ? true
+          : state.isTransactionStatusDialogOpened,
       };
     }
     case "SET_IS_TRANSACTION_STATUS_DIALOG_OPENED": {

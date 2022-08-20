@@ -1,6 +1,6 @@
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DownloadIcon from "@mui/icons-material/Download";
-import { Button, Sheet, Typography } from "@mui/joy";
+import { Button, Link, Sheet, Typography } from "@mui/joy";
 import Card from "@mui/joy/Card";
 import CardOverflow from "@mui/joy/CardOverflow";
 import IconButton from "@mui/joy/IconButton";
@@ -11,6 +11,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useAppItem } from "hooks";
 import PropTypes from "prop-types";
+import { IpfsService } from "services";
 import { appType } from "types";
 
 dayjs.extend(relativeTime);
@@ -121,9 +122,26 @@ const AppItem = ({ app, onClick, onPurchaseButtonClicked, ...others }) => {
         )}
         {isAppOwner && <Typography>👤 My app</Typography>}
 
-        <IconButton variant="soft" size="sm" disabled={!isDownloadable}>
-          <DownloadIcon />
-        </IconButton>
+        <Link
+          target="_blank"
+          rel="noopener noreferrer"
+          href={
+            app?.contentHash
+              ? IpfsService.getLinkFromCidV0(app?.contentHash)
+              : null
+          }
+        >
+          <IconButton
+            variant="soft"
+            size="sm"
+            disabled={!isDownloadable}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <DownloadIcon />
+          </IconButton>
+        </Link>
 
         {!isAppOwner && !isLicenseOwner && (
           <Button variant="solid" size="sm" onClick={onPurchaseButtonClicked}>

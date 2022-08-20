@@ -1,6 +1,6 @@
 import DownloadIcon from "@mui/icons-material/Download";
 import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
-import { Typography } from "@mui/joy";
+import { Link, Typography } from "@mui/joy";
 import Card from "@mui/joy/Card";
 import CardOverflow from "@mui/joy/CardOverflow";
 import IconButton from "@mui/joy/IconButton";
@@ -9,6 +9,7 @@ import { useEtherContext } from "context";
 import dayjs from "dayjs";
 import { useAppItem } from "hooks";
 import PropTypes from "prop-types";
+import { IpfsService } from "services";
 import { appType } from "types";
 
 const AdminAppItem = ({ app, onClick, onEditButtonClicked, ...others }) => {
@@ -97,9 +98,26 @@ const AdminAppItem = ({ app, onClick, onEditButtonClicked, ...others }) => {
           <ModeEditOutlineOutlinedIcon />
         </IconButton>
 
-        <IconButton variant="soft" size="sm" disabled={!isDownloadable}>
-          <DownloadIcon />
-        </IconButton>
+        <Link
+          target="_blank"
+          rel="noopener noreferrer"
+          href={
+            app?.contentHash
+              ? IpfsService.getLinkFromCidV0(app?.contentHash)
+              : null
+          }
+        >
+          <IconButton
+            variant="soft"
+            size="sm"
+            disabled={!isDownloadable}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <DownloadIcon />
+          </IconButton>
+        </Link>
       </Stack>
 
       <CardOverflow

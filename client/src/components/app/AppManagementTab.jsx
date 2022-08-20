@@ -95,7 +95,12 @@ const AppManagementTab = () => {
 
       <EditAppDialog
         open={editDialogOpen}
-        openChanged={setEditDialogOpen}
+        openChanged={useCallback((isOpen) => {
+          setEditDialogOpen(isOpen);
+          if (!isOpen) {
+            setSelectedApp(null);
+          }
+        }, [])}
         app={selectedApp}
       />
     </>
