@@ -1,4 +1,4 @@
-import { License2 } from "contracts";
+import License2 from "contracts/License2.json";
 import { LicenseConverter } from "types";
 
 async function loadLicenseDataFromAddress(

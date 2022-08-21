@@ -1,5 +1,7 @@
 const ApplicationManager = artifacts.require("./ApplicationManager.sol");
 const Application2 = artifacts.require("./Application2.sol");
+const License2 = artifacts.require("./License2.sol");
+const { time } = require("@openzeppelin/test-helpers");
 
 const app1 = {
   id: web3.utils.toBN(web3.utils.soliditySha3("com.example.application1")),
@@ -25,7 +27,6 @@ const app2Premium = {
   name: "Calculator (Premium)",
   timestamp: web3.utils.toBN("1660299317773"),
 };
-
 
 async function setupNewApp(accounts) {
   const appManagerInstance = await ApplicationManager.new();
@@ -216,5 +217,59 @@ contract("Application2", (accounts) => {
     assert.equal(check1, true, "Wrong check with user with application owner");
     assert.equal(check2, true, "Wrong check with user have license");
     assert.equal(check3, false, "Wrong check with user not have license");
+  });
+
+  it("...should not allow expired license", async () => {
+    const appManagerInstance = await ApplicationManager.new();
+    await appManagerInstance.createApplicationWithLicenseLifeTime(
+      ...Object.values(app2),
+      24 * 60 * 60,
+      {
+        from: accounts[1],
+      }
+    );
+
+    const { appAddress } = await appManagerInstance.getApplication(app2.id, {
+      from: accounts[1],
+    });
+
+    const appContract = await Application2.at(appAddress);
+
+    await appContract.send(web3.utils.toWei("0.15", "ether"), {
+      from: accounts[2],
+    });
+
+    const owner2Licenses = await appManagerInstance.getAllLicensesOf(
+      accounts[2]
+    );
+
+    const licenseContractInstance = await License2.at(owner2Licenses[0]);
+    const check1 = await appContract.checkLicense(accounts[2], {
+      from: accounts[2],
+    });
+    assert.equal(check1, true, "Not allow valid license");
+
+    const advanceTime = time.duration.seconds(24 * 60 * 60 + 1);
+    const currentBlockTS = await licenseContractInstance.currentBlockStamp();
+    const timeAdvance = web3.utils.toBN(currentBlockTS).add(advanceTime);
+    await time.increase(timeAdvance);
+
+    const licenseContractInstance2 = await License2.at(owner2Licenses[0]);
+    const currentBlockTS2 = await licenseContractInstance2.currentBlockStamp();
+
+    assert.equal(
+      web3.utils
+        .toBN(currentBlockTS2)
+        .sub(web3.utils.toBN(currentBlockTS))
+        .gte(web3.utils.toBN(24 * 60 * 60)),
+      true,
+      "Time is not advancing"
+    );
+
+    const check2 = await appContract.checkLicense(accounts[2], {
+      from: accounts[2],
+    });
+
+    assert.equal(check2, false, "Expired contract is allowed");
   });
 });

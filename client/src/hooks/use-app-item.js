@@ -30,7 +30,8 @@ export function useAppItem(app, web3, accounts, allLicenses) {
       allLicenses.findIndex((license) => {
         return (
           license.appId === app?.id &&
-          dayjs(license.dateExpired * 1000).isAfter(dayjs())
+          (license.dateExpired === 0 ||
+            dayjs(license.dateExpired * 1000).isAfter(dayjs()))
         );
       }) !== -1
     );

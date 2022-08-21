@@ -52,4 +52,8 @@ contract License2 is Ownable {
     Ownable.transferOwnership(newOwner);
     emit Transferred(newOwner);
   }
+
+  function currentBlockStamp() public view returns (uint256) {
+    return block.timestamp;
+  }
 }

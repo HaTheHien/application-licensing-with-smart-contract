@@ -1,29 +1,4 @@
 const ApplicationManager = artifacts.require("./ApplicationManager.sol");
-const fs = require("fs");
-const path = require("path");
-
-/**
- * @param {string} src  The path to the thing to copy.
- * @param {string} dest The path to the new copy.
- */
-const copyRecursiveSync = function (src, dest) {
-  const exists = fs.existsSync(src);
-  const stats = exists && fs.statSync(src);
-  const isDirectory = exists && stats.isDirectory();
-  if (isDirectory) {
-    if (!fs.existsSync(dest)) {
-      fs.mkdirSync(dest, { recursive: true });
-    }
-    fs.readdirSync(src).forEach(function (childItemName) {
-      copyRecursiveSync(
-        path.join(src, childItemName),
-        path.join(dest, childItemName)
-      );
-    });
-  } else {
-    fs.copyFileSync(src, dest);
-  }
-};
 
 module.exports = async function (deployer, network, accounts) {
   await deployer.deploy(ApplicationManager);
@@ -82,23 +57,11 @@ async function deployApplication(accounts, appManagerInstance) {
 
   const info1 = await appManagerInstance.getApplicationFromAddress(apps1[0]);
   const info2 = await appManagerInstance.getApplicationFromAddress(apps2[0]);
-  const info2Premium = await appManagerInstance.getApplicationFromAddress(apps2[1]);
+  const info2Premium = await appManagerInstance.getApplicationFromAddress(
+    apps2[1]
+  );
 
   console.log(info1.id.toString());
   console.log(info2.id.toString());
   console.log(info2Premium.id.toString());
-
-  const contractDir = path.join(__dirname, "../../client/src/contracts/");
-  const sampleAppContractDir = path.join(
-    __dirname,
-    "../../sample_app/src/contracts/"
-  );
-  const sampleApp2ContractDir = path.join(
-    __dirname,
-    "../../another_sample_app/src/contracts/"
-  );
-  console.log(`Copy contracts to ${sampleAppContractDir}`);
-  copyRecursiveSync(contractDir, sampleAppContractDir);
-  console.log(`Copy contracts to ${sampleApp2ContractDir}`);
-  copyRecursiveSync(contractDir, sampleApp2ContractDir);
 }

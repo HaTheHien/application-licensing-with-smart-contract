@@ -92,7 +92,7 @@ contract ApplicationManager {
     applications[_appId].setSoldNumber(applications[_appId].sold() + 1);
   }
 
-  function createApplication(
+  function createApplicationWithLicenseLifeTime(
     uint256 _appId,
     uint256 _price,
     string memory _contentHash,

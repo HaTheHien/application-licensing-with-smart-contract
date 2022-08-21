@@ -46,6 +46,8 @@ export const LicenseContextProvider = ({ children }) => {
       deployedNetwork && deployedNetwork.address
     );
 
+    console.log(`Application manager contract address: ${deployedNetwork?.address}`)
+
     const { appAddress } = await appManagerInstance.methods
       .getApplication(web3.utils.toBN(process.env.REACT_APP_CONTRACT_ID))
       .call({ from: account });

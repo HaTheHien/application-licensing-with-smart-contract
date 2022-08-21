@@ -1,4 +1,4 @@
-import { Application2 } from "contracts";
+import Application2 from "contracts/Application2.json";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import { ApplicationConverter } from "types";

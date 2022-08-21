@@ -42,7 +42,7 @@ export const EtherContextProvider = ({ children }) => {
       try {
         // const provider = new ethers.providers.Web3Provider(window.ethereum);
         const web3 = await getWeb3();
-        console.log("Web3 instance: ", web3);
+        // console.log("Web3 instance: ", web3);
         dispatch({ type: "SET_PROVIDER", payload: web3 });
 
         if (!web3) {
@@ -67,13 +67,17 @@ export const EtherContextProvider = ({ children }) => {
       const networkId = await web3.eth.net.getId();
       const networks = Object.values(ApplicationManager.networks);
       const deployedNetwork = networks[networkId ?? 0] || networks[0];
-      // console.log(deployedNetwork.address);
+      console.log(
+        "Application manager contract address",
+        deployedNetwork?.address
+      );
 
       try {
         const contract = new web3.eth.Contract(
           ApplicationManager.abi,
           deployedNetwork && deployedNetwork.address
         );
+
         if (contract) {
           dispatch({ type: "SET_APP_MANAGER_CONTRACT", payload: contract });
         }
