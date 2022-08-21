@@ -9,6 +9,24 @@ const app1 = {
   timestamp: web3.utils.toBN("1660299317772"),
 };
 
+const app2 = {
+  id: web3.utils.toBN(web3.utils.soliditySha3("com.example.calculator")),
+  price: web3.utils.toWei("0.15", "ether"),
+  contentHash: "",
+  name: "Calculator",
+  timestamp: web3.utils.toBN("1660299317773"),
+};
+const app2Premium = {
+  id: web3.utils.toBN(
+    web3.utils.soliditySha3("com.example.calculator_premium")
+  ),
+  price: web3.utils.toWei("0.25", "ether"),
+  contentHash: "",
+  name: "Calculator (Premium)",
+  timestamp: web3.utils.toBN("1660299317773"),
+};
+
+
 async function setupNewApp(accounts) {
   const appManagerInstance = await ApplicationManager.new();
 
@@ -166,29 +184,32 @@ contract("Application2", (accounts) => {
 
   it("...should check license owner", async () => {
     const appManagerInstance = await ApplicationManager.new();
-    await appManagerInstance.createApplication(...Object.values(app1), {
-      from: accounts[0],
+    await appManagerInstance.createApplication(...Object.values(app2), {
+      from: accounts[1],
+    });
+    await appManagerInstance.createApplication(...Object.values(app2Premium), {
+      from: accounts[1],
     });
     // console.log(receipt);
 
-    const { appAddress } = await appManagerInstance.getApplication(app1.id, {
-      from: accounts[0],
+    const { appAddress } = await appManagerInstance.getApplication(app2.id, {
+      from: accounts[1],
     });
 
     const appContract = await Application2.at(appAddress);
 
-    await appContract.send(web3.utils.toWei("0.5", "ether"), {
-      from: accounts[1],
+    await appContract.send(web3.utils.toWei("0.15", "ether"), {
+      from: accounts[2],
     });
 
-    const check1 = await appContract.checkLicense(accounts[0], {
+    const check1 = await appContract.checkLicense(accounts[1], {
+      from: accounts[1],
+    });
+    const check2 = await appContract.checkLicense(accounts[2], {
+      from: accounts[2],
+    });
+    const check3 = await appContract.checkLicense(accounts[0], {
       from: accounts[0],
-    });
-    const check2 = await appContract.checkLicense(accounts[1], {
-      from: accounts[1],
-    });
-    const check3 = await appContract.checkLicense(accounts[2], {
-      from: accounts[1],
     });
 
     // console.log(price);

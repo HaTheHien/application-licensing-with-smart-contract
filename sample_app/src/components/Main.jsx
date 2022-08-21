@@ -1,5 +1,5 @@
-import {useLicenseContext} from "context/LicenseContext";
-import React, { useCallback, useState } from "react";
+import { useLicenseContext } from "context/LicenseContext";
+import { useCallback, useState } from "react";
 import KeyPad from "./KeyPad";
 import Screen from "./Screen";
 
@@ -38,14 +38,20 @@ export default function Main() {
 
   const { havePremiumLicense } = useLicenseContext();
 
-
   return (
-    <div className="App">
-      {!havePremiumLicense && <h3>💎 Buy premium license to use "/" button 💎</h3>}
-      <div className="calc-body">
+    <main>
+      {!havePremiumLicense && (
+        <div className="flex w-full items-center justify-center p-4 bg-green-200 mb-4 rounded-lg shadow-lg">
+          <h3 className="text-center">
+            💎 Buy premium license to use "/" button 💎
+          </h3>
+        </div>
+      )}
+
+      <div className="max-w-[400px] m-auto border-2 rounded-lg border-gray-300 shadow-lg">
         <Screen result={result} />
         <KeyPad buttonPressed={buttonPressed} />
       </div>
-    </div>
+    </main>
   );
 }
