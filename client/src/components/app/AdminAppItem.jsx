@@ -17,11 +17,8 @@ const AdminAppItem = ({ app, onClick, onEditButtonClicked, ...others }) => {
     state: { web3, accounts },
   } = useEtherContext();
 
-  const { isDownloadable, isAppOwner, formattedPrice } = useAppItem(
-    app,
-    web3,
-    accounts
-  );
+  const { isDownloadable, isAppOwner, formattedPrice, validTimeText } =
+    useAppItem(app, web3, accounts);
 
   return isAppOwner ? (
     <Card
@@ -85,6 +82,10 @@ const AdminAppItem = ({ app, onClick, onEditButtonClicked, ...others }) => {
         >
           {app.appAddress}
         </Typography>
+      </Stack>
+
+      <Stack direction="row" alignItems="baseline" spacing={0.5} width={1}>
+        <Typography>Valid {validTimeText}</Typography>
       </Stack>
 
       <Stack

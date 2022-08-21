@@ -29,10 +29,6 @@ const AppManagementTab = () => {
         {isLoading && <AppLoadingProgressIndicator />}
         {!isLoading && (
           <>
-            <Typography level="h6" textAlign="center">
-              🚧 Under construction
-            </Typography>
-
             <Box width={1} display="flex" justifyContent="end" pt={1}>
               <Button
                 color="primary"

@@ -1,21 +1,20 @@
+import DeveloperModeIcon from "@mui/icons-material/DeveloperMode";
 import StoreIcon from "@mui/icons-material/Store";
+import { Typography } from "@mui/joy";
+import IconButton from "@mui/joy/IconButton";
 import {
   alpha,
   AppBar,
-  Avatar,
   Box,
-  Button,
   Container,
   Divider,
   Menu,
-  MenuItem,
+  Stack,
   Toolbar,
   Tooltip,
-  Typography,
 } from "@mui/material";
+import { useEtherContext } from "context";
 import { useCallback, useState } from "react";
-
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 const DefaultAppBar = () => {
   // const [anchorElNav, setAnchorElNav] = useState(null);
@@ -28,6 +27,11 @@ const DefaultAppBar = () => {
   const handleCloseUserMenu = useCallback(() => {
     setAnchorElUser(null);
   }, []);
+
+  const {
+    state: { accounts, appManagerContract },
+  } = useEtherContext();
+  console.log(appManagerContract);
 
   return (
     <AppBar
@@ -44,7 +48,7 @@ const DefaultAppBar = () => {
         <Toolbar disableGutters>
           <StoreIcon sx={{ mr: 1 }} />
           <Typography
-            variant="h6"
+            level="h6"
             noWrap
             component="a"
             href="/"
@@ -67,10 +71,15 @@ const DefaultAppBar = () => {
           />
 
           <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <Button variant="icon" onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </Button>
+            <Tooltip title="Debug info">
+              <IconButton
+                variant="outlined"
+                color="neutral"
+                onClick={handleOpenUserMenu}
+                sx={{ p: 0 }}
+              >
+                <DeveloperModeIcon />
+              </IconButton>
             </Tooltip>
 
             <Menu
@@ -89,11 +98,23 @@ const DefaultAppBar = () => {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
+              <Stack spacing={1} minWidth={200} p={2} alignItems="start">
+                {accounts && accounts?.length !== 0 && (
+                  <Typography>
+                    👤 Account{" "}
+                    <Typography level="caption" fontFamily="monospace">
+                      {accounts[0]}
+                    </Typography>
+                  </Typography>
+                )}
+
+                <Typography>
+                  📜 Manager contract{" "}
+                  <Typography level="caption" fontFamily="monospace">
+                    {appManagerContract?._address}
+                  </Typography>
+                </Typography>
+              </Stack>
             </Menu>
           </Box>
         </Toolbar>

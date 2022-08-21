@@ -1,9 +1,13 @@
 import dayjs from "dayjs";
+import duration from "dayjs/plugin/duration";
 import LocalizedFormat from "dayjs/plugin/localizedFormat";
+import relativeTime from "dayjs/plugin/relativeTime";
 import { useMemo } from "react";
 import { ETHER_SYMBOL } from "utils";
 
 dayjs.extend(LocalizedFormat);
+dayjs.extend(duration);
+dayjs.extend(relativeTime);
 
 export function useAppItem(app, web3, accounts, allLicenses) {
   const isDownloadable = useMemo(() => {
@@ -37,11 +41,18 @@ export function useAppItem(app, web3, accounts, allLicenses) {
     );
   }, [allLicenses, app?.id]);
 
+  const validTimeText = useMemo(() => {
+    return app?.licenseLifeTime !== 0
+      ? dayjs.duration(app?.licenseLifeTime ?? 0, "s").humanize(true)
+      : " forever ∞";
+  }, [app?.licenseLifeTime]);
+
   return {
     isAppOwner,
     isDownloadable,
     formattedPrice,
     formattedDateCreated,
     isLicenseOwner,
+    validTimeText,
   };
 }

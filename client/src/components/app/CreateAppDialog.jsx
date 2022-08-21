@@ -1,20 +1,26 @@
-import { Button, Sheet, TextField, Typography } from "@mui/joy";
+import { Button, FormLabel, Sheet, TextField, Typography } from "@mui/joy";
+import Option from "@mui/joy/Option";
+import Select from "@mui/joy/Select";
 import {
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   Divider,
+  FormControl,
   Stack,
-  TextField as MuiTextField,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { useAppManagementContext } from "context";
+import dayjs from "dayjs";
+import duration from "dayjs/plugin/duration";
 import PropTypes from "prop-types";
 import { useCallback } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { ETHER_SYMBOL } from "utils";
+import { ETHER_SYMBOL, LICENSE_LIFE_TIME_UNIT } from "utils";
+
+dayjs.extend(duration);
 
 const CreateAppDialog = ({ open, openChanged }) => {
   const theme = useTheme();
@@ -29,16 +35,14 @@ const CreateAppDialog = ({ open, openChanged }) => {
     reset,
   } = useForm({
     defaultValues: {
-      // id: "",
       packageName: "",
       name: "",
       dateCreated: 0,
-      // contentHash: "",
-      // owner: "",
       content: "",
       version: 0,
       price: "",
-      // formattedPrice: null,
+      lifetimeUnit: LICENSE_LIFE_TIME_UNIT.days.value,
+      lifetimeAmount: 365,
     },
     mode: "onBlur",
   });
@@ -50,7 +54,12 @@ const CreateAppDialog = ({ open, openChanged }) => {
         async (data) => {
           console.log(data);
           openChanged?.call(false);
-          await createNewApp(data);
+          await createNewApp({
+            ...data,
+            licenseLifeTime: dayjs
+              .duration(+data.lifetimeAmount, data.lifetimeUnit)
+              .asSeconds(),
+          });
           reset();
         },
         (errors) => console.log(errors)
@@ -145,27 +154,59 @@ const CreateAppDialog = ({ open, openChanged }) => {
             )}
           />
 
-          <Controller
-            control={control}
-            name="description"
-            rules={{ required: "Please describe your application" }}
-            render={({ field }) => (
-              <MuiTextField
-                required
-                {...field}
-                label="Description"
-                size="md"
-                variant="outlined"
-                color="primary"
-                // startDecorator={<Typography>ℹ</Typography>}
-                fullWidth
-                multiline
-                rows={4}
-                error={!!errors["description"]}
-                helperText={errors?.description?.message || ""}
+          <Stack direction="row" spacing={1}>
+            <Controller
+              control={control}
+              name="lifetimeAmount"
+              rules={{
+                required: "Please enter license lifetime",
+              }}
+              render={({ field }) => (
+                <TextField
+                  required
+                  {...field}
+                  label="License lifetime"
+                  placeholder="0"
+                  size="md"
+                  variant="outlined"
+                  startDecorator={<Typography>📅</Typography>}
+                  fullWidth
+                  error={!!errors["lifetimeAmount"]}
+                  helperText={
+                    errors?.lifetimeAmount?.message ||
+                    `Enter 0 when the license lifetime is forever`
+                  }
+                />
+              )}
+            />
+
+            <FormControl required sx={{ minWidth: 160 }}>
+              <FormLabel>Unit</FormLabel>
+              <Controller
+                control={control}
+                name="lifetimeUnit"
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    id="license-lifetime-unit-select"
+                    label="Unit"
+                    sx={{ mt: 0.25 }}
+                  >
+                    {Object.values(LICENSE_LIFE_TIME_UNIT).map((d) => (
+                      <Option value={d.value} key={d.value}>
+                        <Typography> {d.name}</Typography>
+                      </Option>
+                    ))}
+                  </Select>
+                )}
               />
-            )}
-          />
+              {errors?.lifetimeUnit && (
+                <Typography variant="caption" color="error" m="3px 14px">
+                  {errors?.lifetimeUnit?.message}
+                </Typography>
+              )}
+            </FormControl>
+          </Stack>
         </Stack>
 
         <DialogActions>

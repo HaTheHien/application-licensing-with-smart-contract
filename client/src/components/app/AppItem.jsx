@@ -1,6 +1,6 @@
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DownloadIcon from "@mui/icons-material/Download";
-import { Button, Link, Sheet, Typography } from "@mui/joy";
+import { Button, Link, Typography } from "@mui/joy";
 import Card from "@mui/joy/Card";
 import CardOverflow from "@mui/joy/CardOverflow";
 import IconButton from "@mui/joy/IconButton";
@@ -8,12 +8,14 @@ import { Divider, Stack } from "@mui/material";
 import { useEtherContext } from "context";
 import { useLicenseManagementContext } from "context/LicenseManagementContext";
 import dayjs from "dayjs";
+import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { useAppItem } from "hooks";
 import PropTypes from "prop-types";
 import { IpfsService } from "services";
 import { appType } from "types";
 
+dayjs.extend(duration);
 dayjs.extend(relativeTime);
 
 const AppItem = ({ app, onClick, onPurchaseButtonClicked, ...others }) => {
@@ -24,8 +26,13 @@ const AppItem = ({ app, onClick, onPurchaseButtonClicked, ...others }) => {
     state: { licenses },
   } = useLicenseManagementContext();
 
-  const { isDownloadable, isAppOwner, formattedPrice, isLicenseOwner } =
-    useAppItem(app, web3, accounts, licenses);
+  const {
+    isDownloadable,
+    isAppOwner,
+    formattedPrice,
+    isLicenseOwner,
+    validTimeText,
+  } = useAppItem(app, web3, accounts, licenses);
 
   return (
     <Card
@@ -65,46 +72,34 @@ const AppItem = ({ app, onClick, onPurchaseButtonClicked, ...others }) => {
 
       <Stack direction="row" alignItems="baseline" spacing={0.5} width={1}>
         <Typography>ID</Typography>
-        <Sheet
-          variant="soft"
-          p={1}
-          sx={{
-            width: 1,
-            borderRadius: "8px",
-          }}
+
+        <Typography
+          level="caption"
+          fontFamily="monospace"
+          noWrap
+          overflow="hidden"
+          textOverflow="ellipsis"
         >
-          <Typography
-            level="caption"
-            fontFamily="monospace"
-            noWrap
-            overflow="hidden"
-            textOverflow="ellipsis"
-          >
-            {app.id}
-          </Typography>
-        </Sheet>
+          {app.id}
+        </Typography>
       </Stack>
 
       <Stack direction="row" alignItems="baseline" spacing={0.5} width={1}>
         <Typography>By</Typography>
-        <Sheet
-          variant="soft"
-          p={1}
-          sx={{
-            width: 1,
-            borderRadius: "8px",
-          }}
+
+        <Typography
+          level="caption"
+          fontFamily="monospace"
+          noWrap
+          overflow="hidden"
+          textOverflow="ellipsis"
         >
-          <Typography
-            level="caption"
-            fontFamily="monospace"
-            noWrap
-            overflow="hidden"
-            textOverflow="ellipsis"
-          >
-            {isAppOwner ? "me" : app.owner}
-          </Typography>
-        </Sheet>
+          {isAppOwner ? "me" : app.owner}
+        </Typography>
+      </Stack>
+
+      <Stack direction="row" alignItems="baseline" spacing={0.5} width={1}>
+        <Typography>Valid {validTimeText}</Typography>
       </Stack>
 
       <Stack

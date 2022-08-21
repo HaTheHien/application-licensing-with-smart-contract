@@ -4,10 +4,10 @@ import { useCallback } from "react";
 
 const NoLicence = () => {
   const { checkLicense, web3, accounts } = useLicenseContext();
-  const onReloadButtonClicked = useCallback(
-    () => checkLicense(web3, accounts),
-    [accounts, checkLicense, web3]
-  );
+  const onReloadButtonClicked = useCallback(async () => {
+    console.log(accounts, web3);
+    return await checkLicense(web3, accounts);
+  }, [accounts, checkLicense, web3]);
   return (
     <div className="flex flex-col gap-y-1 items-center">
       <h1 style={{ fontSize: "50pt", margin: 0 }}>📜</h1>

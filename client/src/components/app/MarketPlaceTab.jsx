@@ -27,10 +27,6 @@ const MarketPlaceTab = () => {
   return (
     <>
       <Stack direction="column" spacing={1}>
-        <Typography level="h6" textAlign="center">
-          🚧 Under construction
-        </Typography>
-
         {isLoading && <AppLoadingProgressIndicator />}
 
         {!isLoading && (

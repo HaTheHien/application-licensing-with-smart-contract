@@ -115,7 +115,7 @@ const LicenseDialog = ({ license, open, onClose, onTransferButtonClicked }) => {
               </Stack>
 
               <Stack direction="row" spacing={1} alignItems="baseline">
-                <Typography fontWeight="bold">🪙 App Price</Typography>
+                <Typography fontWeight="bold">🪙 Current Price</Typography>
                 <Typography>{formattedPrice}</Typography>
               </Stack>
 

@@ -17,6 +17,7 @@ const LicenseContext = createContext({
   web3: null,
   accounts: null,
   checkLicense: (_, __) => {},
+  appManagerAddress: null,
 });
 
 export const useLicenseContext = () => {
@@ -29,10 +30,19 @@ export const LicenseContextProvider = ({ children }) => {
   const [error, setError] = useState(false);
   const [web3, setWeb3] = useState(null);
   const [accounts, setAccounts] = useState(null);
+  const [appManagerAddress, setAppManagerAddress] = useState(null);
 
-  const checkLicense = useCallback(async (web3, accounts) => {
-    if (!accounts || accounts?.length === 0) return;
-    if (!web3) return;
+  const checkLicense = useCallback(async (_web3, _accounts) => {
+    let web3 = _web3;
+    let accounts = _accounts;
+    if (!_accounts && !_web3) {
+      web3 = await getWeb3();
+      setWeb3(web3);
+      accounts = await web3?.eth.getAccounts();
+      setAccounts(accounts);
+    }
+    if (!_accounts || _accounts?.length === 0) return;
+    if (!_web3) return;
 
     const account = accounts[0];
     console.log(account);
@@ -46,7 +56,10 @@ export const LicenseContextProvider = ({ children }) => {
       deployedNetwork && deployedNetwork.address
     );
 
-    console.log(`Application manager contract address: ${deployedNetwork?.address}`)
+    console.log(
+      `Application manager contract address: ${deployedNetwork?.address}`
+    );
+    setAppManagerAddress(deployedNetwork?.address);
 
     const { appAddress } = await appManagerInstance.methods
       .getApplication(web3.utils.toBN(process.env.REACT_APP_CONTRACT_ID))
@@ -138,8 +151,17 @@ export const LicenseContextProvider = ({ children }) => {
       checkLicense,
       web3,
       accounts,
+      appManagerAddress,
     }),
-    [accounts, checkLicense, error, haveLicense, havePremiumLicense, web3]
+    [
+      accounts,
+      appManagerAddress,
+      checkLicense,
+      error,
+      haveLicense,
+      havePremiumLicense,
+      web3,
+    ]
   );
 
   return (

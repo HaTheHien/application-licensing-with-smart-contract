@@ -27,8 +27,13 @@ const AppItemDialog = ({ app, open, openChanged, onPurchaseButtonClicked }) => {
   } = useLicenseManagementContext();
 
   const onClose = useCallback(() => openChanged?.call(false), [openChanged]);
-  const { isAppOwner, formattedPrice, formattedDateCreated, isLicenseOwner } =
-    useAppItem(app, web3, accounts, licenses);
+  const {
+    isAppOwner,
+    formattedPrice,
+    formattedDateCreated,
+    isLicenseOwner,
+    validTimeText,
+  } = useAppItem(app, web3, accounts, licenses);
 
   return (
     <Dialog open={!!open} onClose={onClose} fullScreen={fullScreen}>
@@ -85,6 +90,11 @@ const AppItemDialog = ({ app, open, openChanged, onPurchaseButtonClicked }) => {
               <Stack direction="row" spacing={1} alignItems="baseline">
                 <Typography fontWeight="bold">🪙 Price</Typography>
                 <Typography>{formattedPrice}</Typography>
+              </Stack>
+
+              <Stack direction="row" spacing={1} alignItems="baseline">
+                <Typography fontWeight="bold">📅 Valid</Typography>
+                <Typography>{validTimeText}</Typography>
               </Stack>
 
               <Stack direction="row" spacing={1} alignItems="baseline">

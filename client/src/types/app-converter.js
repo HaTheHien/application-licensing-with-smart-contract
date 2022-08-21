@@ -20,6 +20,7 @@ function toContract(data, web3) {
     "", // content hash
     data.name,
     web3.utils.toBN(data.dateCreated),
+    web3.utils.toBN(data.licenseLifeTime),
   ];
 }
 

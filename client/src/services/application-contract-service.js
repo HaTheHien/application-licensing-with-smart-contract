@@ -87,7 +87,9 @@ async function loadApplicationData(contract, web3, accounts) {
 
 async function createNewApp(contract, data, accounts, web3) {
   return await contract.methods
-    .createApplication(...ApplicationConverter.toContract(data, web3))
+    .createApplicationWithLicenseLifeTime(
+      ...ApplicationConverter.toContract(data, web3)
+    )
     .send({ from: accounts[0] });
 }
 

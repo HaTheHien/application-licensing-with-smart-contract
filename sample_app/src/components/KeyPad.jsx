@@ -1,5 +1,6 @@
 import { useLicenseContext } from "context/LicenseContext";
 import { useCallback } from "react";
+import "./styles.css";
 
 export default function KeyPad(props) {
   const buttonPressed = useCallback(
