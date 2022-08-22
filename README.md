@@ -2,12 +2,6 @@
 
 ## Đề tài: BLOCKCHAIN SOFTWARE LICENCE MANAGEMENT
 
-Thông tin nhóm:
-
-1. 18127097 - Hà Thế Hiển
-2. 18127105 - Đỗ Quốc Huy
-3. 18127119 - Nguyễn Đỗ Khiêm
-
 #### Framework
 
       Client: ReactJS
@@ -69,5 +63,13 @@ truffle deploy
 ```shell
 cd ./client # Navigate to client folder
 yarn        # install dependencies
-yarn start  # start the devvelopment server
+yarn start  # start the development server
 ```
+
+### Preview
+![](assets/licence-marketplace-1.png)
+![](assets/licence-marketplace-2.png)
+![](assets/licence-marketplace-3.png)
+![](assets/licence-marketplace-4.png)
+![](assets/calculator-1.png)
+![](assets/calculator-2.png)
