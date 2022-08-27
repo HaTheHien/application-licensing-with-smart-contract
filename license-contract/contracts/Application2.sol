@@ -21,7 +21,8 @@ contract Application2 is Ownable {
     string name,
     uint256 price,
     string contentHash,
-    uint256 licenseLifeTime
+    uint256 licenseLifeTime,
+    bool isVisible
   );
 
   uint256 public id;
@@ -33,6 +34,7 @@ contract Application2 is Ownable {
   // number of sold licenses
   uint256 public sold;
   uint256 public licenseLifeTime;
+  bool public isVisible;
 
   ApplicationManager applicationManager;
   License2[] licenses;
@@ -57,6 +59,7 @@ contract Application2 is Ownable {
     version = _version;
     sold = 0;
     licenseLifeTime = _licenseLifeTime;
+    isVisible = true;
 
     applicationManager = ApplicationManager(msg.sender);
   }
@@ -212,7 +215,15 @@ contract Application2 is Ownable {
     licenseLifeTime = _licenseLifeTime;
     version++;
 
-    emit ApplicationEdited(owner(), id, name, price, contentHash, licenseLifeTime);
+    emit ApplicationEdited(owner(), id, name, price, contentHash, licenseLifeTime, isVisible);
+  }
+
+  function changeApplicationVisibility(
+    bool _isVisible
+  ) public onlyOwner {
+    isVisible = _isVisible;
+
+    emit ApplicationEdited(owner(), id, name, price, contentHash, licenseLifeTime, isVisible);
   }
 
   function checkLicense(address _address) public view returns (bool) {

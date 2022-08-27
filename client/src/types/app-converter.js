@@ -10,6 +10,7 @@ function fromContract(app, web3) {
     owner: app.owner,
     appAddress: app.appAddress,
     licenseLifeTime: +app.licenseLifeTime,
+    isVisible: !!app.isVisible,
   };
 }
 

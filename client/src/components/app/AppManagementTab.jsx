@@ -7,7 +7,7 @@ import AppLoadingProgressIndicator from "components/app/AppLoadingProgressIndica
 import CreateAppDialog from "components/app/CreateAppDialog";
 import EditAppDialog from "components/app/EditAppDialog";
 import { useAppManagementContext } from "context";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 const AppManagementTab = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -16,12 +16,16 @@ const AppManagementTab = () => {
   const [selectedApp, setSelectedApp] = useState(null);
 
   const {
-    state: { allPublishedAppAddresses, allPublishedApps, isLoading },
+    state: { allPublishedApps, isLoading },
   } = useAppManagementContext();
 
   const onCreateButtonClicked = useCallback(() => {
     setDialogOpen(true);
   }, []);
+
+  const displayedApps = useMemo(() => {
+    return allPublishedApps.filter((app) => app?.isVisible === true);
+  }, [allPublishedApps]);
 
   return (
     <>
@@ -41,7 +45,7 @@ const AppManagementTab = () => {
               </Button>
             </Box>
 
-            {allPublishedAppAddresses.length === 0 && (
+            {displayedApps.length === 0 && (
               <Stack
                 spacing={1}
                 direction="column"
@@ -57,7 +61,7 @@ const AppManagementTab = () => {
               </Stack>
             )}
 
-            {allPublishedApps.map((app) => (
+            {displayedApps.map((app) => (
               <Box pt={1} key={app.id}>
                 <AdminAppItem
                   app={app}

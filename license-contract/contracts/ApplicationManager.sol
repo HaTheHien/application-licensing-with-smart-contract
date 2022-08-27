@@ -184,7 +184,8 @@ contract ApplicationManager {
       uint256 totalSold,
       address owner,
       uint256 licenseLifeTime,
-      address appAddress
+      address appAddress,
+      bool isVisible
     )
   {
     require(_isApplicationExist(_appId));
@@ -199,7 +200,8 @@ contract ApplicationManager {
       application.sold(),
       application.owner(),
       application.licenseLifeTime(),
-      address(application)
+      address(application),
+      application.isVisible()
     );
   }
 
@@ -224,7 +226,8 @@ contract ApplicationManager {
       uint256 totalSold,
       address owner,
       uint256 licenseLifeTime,
-      address appAddress
+      address appAddress,
+      bool isVisible
     )
   {
     Application2 application = Application2(_appAddress);
@@ -238,7 +241,8 @@ contract ApplicationManager {
       application.sold(),
       application.owner(),
       application.licenseLifeTime(),
-      address(application)
+      address(application),
+      application.isVisible()
     );
   }
 

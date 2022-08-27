@@ -1,5 +1,6 @@
 import { Typography } from "@mui/joy";
 import { Grid, Stack } from "@mui/material";
+import { useMemo } from "react";
 import AppLoadingProgressIndicator from "components/app/AppLoadingProgressIndicator";
 import { AppItem, AppItemDialog } from "components/app/index";
 import { BuyLicenseDialog } from "components/license";
@@ -24,6 +25,10 @@ const MarketPlaceTab = () => {
     }
   }, [purchaseLicense, selectedApp]);
 
+  const displayedApps = useMemo(() => {
+    return allApps.filter((app) => app?.isVisible === true);
+  }, [allApps]);
+
   return (
     <>
       <Stack direction="column" spacing={1}>
@@ -32,7 +37,7 @@ const MarketPlaceTab = () => {
         {!isLoading && (
           <>
             <Grid container py={2}>
-              {allApps.map((app, idx) => (
+              {displayedApps.map((app, idx) => (
                 <Grid item xs={4} key={idx} px={0.5} py={0.5}>
                   <AppItem
                     app={app}
@@ -50,7 +55,7 @@ const MarketPlaceTab = () => {
               ))}
             </Grid>
 
-            {allApps.length === 0 && (
+            {displayedApps.length === 0 && (
               <Stack
                 spacing={1}
                 direction="column"

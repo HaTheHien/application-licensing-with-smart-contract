@@ -40,7 +40,7 @@ const EditAppDialog = ({ app, open, openChanged }) => {
   const [index, setIndex] = useState(0);
   const changeTab = useCallback((e, value) => setIndex(value), []);
 
-  const { editApp } = useAppManagementContext();
+  const { editApp, removeApp } = useAppManagementContext();
 
   const confirmKeyword = useMemo(() => {
     return accounts && accounts?.length > 0 ? accounts[0] : "sandwiches";
@@ -109,6 +109,11 @@ const EditAppDialog = ({ app, open, openChanged }) => {
     }
   }, [editApp, handleSubmit, openChanged]);
 
+  const onRemoveButtonClicked = useCallback(async () => {
+    await removeApp(app?.appAddress);
+    onClose();
+  }, [app?.appAddress, onClose, removeApp]);
+
   return (
     <Dialog open={!!open} fullScreen={fullScreen} onClose={onClose}>
       {app && (
@@ -147,7 +152,9 @@ const EditAppDialog = ({ app, open, openChanged }) => {
 
               <FormProvider {...form}>
                 <TabPanel value={0}>
-                  <EditAppContractForm />
+                  <EditAppContractForm
+                    onRemoveButtonClicked={onRemoveButtonClicked}
+                  />
                 </TabPanel>
 
                 <TabPanel value={1}>

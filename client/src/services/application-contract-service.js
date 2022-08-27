@@ -14,7 +14,7 @@ async function loadApplicationDataFromAddress(
   const contractApp = await contract.methods
     .getApplicationFromAddress(applicationContractAddress)
     .call({ from: account });
-  // console.log(contractApp);
+
   return ApplicationConverter.fromContract(contractApp, web3);
 }
 
@@ -122,6 +122,17 @@ async function editApp(contract, data, accounts, web3) {
     .send({ from: accounts[0] });
 }
 
+async function removeApp(contract, appAddress, accounts, web3) {
+  if (!appAddress) {
+    throw new Error("App address not found");
+  }
+
+  const appContract = new web3.eth.Contract(Application2.abi, appAddress);
+  await appContract.methods
+    .changeApplicationVisibility(false)
+    .send({ from: accounts[0] });
+}
+
 export const ApplicationContractService = {
   // loadApplicationDataFromAddress,
   loadApplicationData,
@@ -129,4 +140,5 @@ export const ApplicationContractService = {
   createNewApp,
   purchaseLicense,
   editApp,
+  removeApp,
 };

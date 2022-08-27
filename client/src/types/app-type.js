@@ -11,4 +11,5 @@ export const appType = PropTypes.shape({
   owner: PropTypes.string,
   address: PropTypes.string,
   licenseLifeTime: PropTypes.number,
+  isVisible: PropTypes.bool,
 });

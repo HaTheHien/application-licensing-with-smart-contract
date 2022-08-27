@@ -1,11 +1,19 @@
-import { FormLabel, TextField, Typography } from "@mui/joy";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { Button, FormLabel, Sheet, TextField, Typography } from "@mui/joy";
 import Option from "@mui/joy/Option";
 import Select from "@mui/joy/Select";
-import { FormControl, Stack } from "@mui/material";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  FormControl,
+  Stack,
+} from "@mui/material";
+import PropTypes from "prop-types";
 import { Controller, useFormContext } from "react-hook-form";
 import { ETHER_SYMBOL, LICENSE_LIFE_TIME_UNIT } from "utils";
 
-const EditAppContractForm = () => {
+const EditAppContractForm = ({ onRemoveButtonClicked }) => {
   const {
     control,
     formState: { errors },
@@ -115,8 +123,28 @@ const EditAppContractForm = () => {
           )}
         </FormControl>
       </Stack>
+
+      <Accordion
+        component={Sheet}
+        variant="outlined"
+        sx={{ boxShadow: "none", mt: 2 }}
+      >
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography fontWeight="bold">Advanced actions</Typography>
+        </AccordionSummary>
+
+        <AccordionDetails>
+          <Button color="danger" fullWidth onClick={onRemoveButtonClicked}>
+            Delete app
+          </Button>
+        </AccordionDetails>
+      </Accordion>
     </Stack>
   );
+};
+
+EditAppContractForm.propTypes = {
+  onRemoveButtonClicked: PropTypes.func,
 };
 
 export default EditAppContractForm;
